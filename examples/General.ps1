@@ -1,19 +1,15 @@
 ﻿<#
   .SYNOPSIS
-    This is a general example of how to use the module.
+    This is a general example of how to use the Toml module.
 #>
 
 # Import the module
-Import-Module -Name 'PSModule'
+Import-Module -Name 'Toml'
 
-# Define the path to the font file
-$FontFilePath = 'C:\Fonts\CodeNewRoman\CodeNewRomanNerdFontPropo-Regular.tff'
-
-# Install the font
-Install-Font -Path $FontFilePath -Verbose
-
-# List installed fonts
-Get-Font -Name 'CodeNewRomanNerdFontPropo-Regular'
-
-# Uninstall the font
-Get-Font -Name 'CodeNewRomanNerdFontPropo-Regular' | Uninstall-Font -Verbose
+# Convert a TOML string to a PowerShell object
+$toml = @'
+[database]
+host = "localhost"
+port = 5432
+'@
+ConvertFrom-Toml -InputObject $toml
