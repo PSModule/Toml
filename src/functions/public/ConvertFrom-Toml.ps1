@@ -19,5 +19,6 @@
         [Parameter(Mandatory)]
         [string] $InputObject
     )
+    $null = $InputObject
     throw [System.NotImplementedException] 'ConvertFrom-Toml is not yet implemented.'
 }
