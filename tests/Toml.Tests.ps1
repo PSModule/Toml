@@ -10,10 +10,6 @@
 param()
 
 Describe 'Module' {
-    BeforeAll {
-        . (Join-Path -Path $PSScriptRoot -ChildPath '..\src\functions\public\Get-Toml.ps1')
-    }
-
     It 'Function: Get-Toml - Returns raw TOML content from file' {
         $path = Join-Path -Path $TestDrive -ChildPath 'sample.toml'
         $expected = @'
