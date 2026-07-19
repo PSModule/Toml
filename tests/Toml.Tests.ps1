@@ -10,7 +10,15 @@
 param()
 
 Describe 'Module' {
-    It 'Function: ConvertFrom-Toml - Throws NotImplementedException' {
-        { ConvertFrom-Toml -InputObject '[database]' } | Should -Throw
+    BeforeAll {
+        . (Join-Path $PSScriptRoot 'bootstrap.ps1')
+    }
+
+    It 'Module has expected commands' {
+        $commands = Get-Command -Module Toml | Select-Object -ExpandProperty Name | Sort-Object
+        $commands | Should -Contain 'ConvertFrom-Toml'
+        $commands | Should -Contain 'ConvertTo-Toml'
+        $commands | Should -Contain 'Import-Toml'
+        $commands | Should -Contain 'Export-Toml'
     }
 }

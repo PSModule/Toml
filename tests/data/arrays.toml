@@ -1,0 +1,11 @@
+# Array types
+integers = [1, 2, 3]
+strings = ["a", "b", "c"]
+mixed_types = [1, "two", 3.0, true]
+nested = [[1, 2], [3, 4, 5]]
+empty = []
+multiline = [
+  1,
+  2,
+  3,
+]

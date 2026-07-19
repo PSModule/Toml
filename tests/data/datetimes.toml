@@ -1,0 +1,6 @@
+# Date and time types
+offset_dt_z = 1979-05-27T07:32:00Z
+offset_dt_num = 1979-05-27T07:32:00+05:30
+local_dt = 1979-05-27T07:32:00
+local_date = 1979-05-27
+local_time = 07:32:00
