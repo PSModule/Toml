@@ -105,30 +105,22 @@ Export-Toml -InputObject $doc -Path './config.toml'
 
 ## Implementation notes
 
-- Implemented with in-repository PowerShell parser/serializer logic (no external TOML runtime dependency).
+- Pure PowerShell parser and serializer — no external TOML runtime dependency.
 - Duplicate keys and table redefinition are rejected per the TOML 1.0.0 spec.
 - Files are written as UTF-8 without BOM.
 
+## More examples
 
-### Example 2
-
-Provide examples for typical commands that a user would like to do with the module.
+See the [examples](examples) folder for runnable scripts. Use PowerShell help for per-command examples:
 
 ```powershell
-Import-Module -Name PSModuleTemplate
+Get-Help ConvertFrom-Toml -Examples
+Get-Help Import-Toml -Examples
 ```
-
-### Find more examples
-
-To find more examples of how to use the module, please refer to the [examples](examples) folder.
-
-Alternatively, you can use the Get-Command -Module 'This module' to find more commands that are available in the module.
-To find examples of each of the commands you can use Get-Help -Examples 'CommandName'.
 
 ## Documentation
 
-Link to further documentation if available, or describe where in the repository users can find more detailed documentation about
-the module's functions and features.
+Full documentation is available at [psmodule.io/Toml](https://psmodule.io/Toml).
 
 ## Contributing
 
@@ -136,15 +128,8 @@ Coder or not, you can contribute to the project! We welcome all contributions.
 
 ### For Users
 
-If you don't code, you still sit on valuable information that can make this project even better. If you experience that the
-product does unexpected things, throw errors or is missing functionality, you can help by submitting bugs and feature requests.
-Please see the issues tab on this project and submit a new issue that matches your needs.
+If you experience unexpected behavior, errors, or missing functionality, please open an issue on the [issues tab](https://github.com/PSModule/Toml/issues).
 
 ### For Developers
 
-If you do code, we'd love to have your contributions. Please read the [Contribution guidelines](CONTRIBUTING.md) for more information.
-You can either help by picking up an existing issue or submit a new one if you have an idea for a new feature or improvement.
-
-## Acknowledgements
-
-Here is a list of people and projects that helped this project in some way.
+Please read the [Contribution guidelines](CONTRIBUTING.md) and pick up an existing issue or submit a new one.
