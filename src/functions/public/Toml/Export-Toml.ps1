@@ -36,6 +36,9 @@
         - the object graph contains null values (TOML has no null)
         - the object graph contains types that cannot be serialized to TOML
         - the file cannot be created or written
+
+        .LINK
+        https://psmodule.io/Toml/Functions/Export-Toml
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param(

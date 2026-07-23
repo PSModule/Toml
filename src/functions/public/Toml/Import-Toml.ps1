@@ -33,6 +33,9 @@
         - the file does not exist
         - the file cannot be read
         - the file content is not valid TOML 1.0.0
+
+        .LINK
+        https://psmodule.io/Toml/Functions/Import-Toml
     #>
     [OutputType([TomlDocument])]
     [CmdletBinding()]

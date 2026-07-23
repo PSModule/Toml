@@ -6,6 +6,9 @@ function ConvertFrom-Toml {
         .DESCRIPTION
         Parses TOML-formatted text into a TomlDocument object with OrderedDictionary
         semantics and TOML-compatible scalar mappings.
+
+        .LINK
+        https://psmodule.io/Toml/Functions/ConvertFrom-Toml
     #>
     [OutputType([TomlDocument])]
     [CmdletBinding()]

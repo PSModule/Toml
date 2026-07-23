@@ -2,6 +2,9 @@ function ConvertTo-Toml {
     <#
         .SYNOPSIS
         Converts a PowerShell object graph to TOML text.
+
+        .LINK
+        https://psmodule.io/Toml/Functions/ConvertTo-Toml
     #>
     [OutputType([string])]
     [CmdletBinding()]
