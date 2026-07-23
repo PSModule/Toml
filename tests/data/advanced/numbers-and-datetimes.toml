@@ -1,0 +1,103 @@
+# numbers-and-datetimes.toml
+# Exhaustive showcase of every TOML 1.0.0 numeric and datetime form.
+# Features: all integer literals, all float literals, all four datetime types,
+#           mixed/heterogeneous arrays, nested arrays, comments.
+
+# ── Integers ─────────────────────────────────────────────────────────────────
+
+[integers]
+answer        = 42
+positive      = +42
+negative      = -42
+zero          = 0
+one-million   = 1_000_000
+phone-num     = 8_675_309
+
+hex-upper     = 0xDEADBEEF
+hex-lower     = 0xdeadbeef
+hex-under     = 0xdead_beef
+octal-perms   = 0o755
+octal-full    = 0o01234567
+binary-byte   = 0b1100_0011
+binary-long   = 0b0001_0000_0000_0000_0000_0000
+
+# ── Floats ───────────────────────────────────────────────────────────────────
+
+[floats]
+pi          =  3.14159_26535
+neg-pi      = -3.14
+pos-pi      = +3.14
+zero-frac   =  0.0
+neg-zero    = -0.0
+small       =  0.0123
+
+avogadro    =  6.022e23
+planck      =  6.626e-34
+speed-c     =  2.998e+8
+exp-upper   =  1.0E6
+neg-e       = -1e-1
+
+under-int   =  3_141.5927
+under-frac  =  3141.592_7
+under-exp   =  3e1_4
+
+infinity      =  inf
+neg-infinity  = -inf
+pos-infinity  = +inf
+not-a-number  =  nan
+neg-nan       = -nan
+pos-nan       = +nan
+
+# ── Datetimes ────────────────────────────────────────────────────────────────
+
+[datetimes]
+utc-zulu        = 1987-07-05T17:45:56Z
+utc-space-sep   = 1987-07-05 17:45:00Z
+utc-lowercase-z = 1987-07-05t17:45:00z
+utc-millis      = 2024-01-15T08:30:00.123Z
+
+eastern-us      = 2024-06-21T09:00:00-04:00
+western-eu      = 2024-06-21T15:00:00+02:00
+india           = 2024-01-01T05:30:00+05:30
+nepal           = 2024-01-01T05:45:00+05:45
+
+local-dt        = 1987-07-05T17:45:00
+local-dt-millis = 1977-12-21T10:32:00.555
+local-dt-space  = 1987-07-05 17:45:00
+
+birthday        = 1987-07-05
+epoch-date      = 1970-01-01
+leap-day        = 2000-02-29
+
+start-of-day    = 00:00:00
+noon            = 12:00:00
+end-of-day      = 23:59:59
+with-millis     = 17:45:00.123
+
+# ── Mixed-type and nested arrays ─────────────────────────────────────────────
+
+[arrays]
+integers  = [1, 2, 3, 4, 5]
+floats    = [1.1, 2.2, 3.3]
+strings   = ["alpha", "beta", "gamma"]
+booleans  = [true, false, true]
+mixed     = [1, 1.5, "two", true]
+
+dates = [
+    1987-07-05T17:45:00Z,
+    1979-05-27T07:32:00,
+    2006-06-01,
+    11:00:00,
+]
+
+nested-strings = [["a", "b"], ["c", "d"], ["e"]]
+nested-ints    = [[1, 2], [3, 4, 5], [6]]
+deeply-nested  = [[[1, 2], [3]], [[4, 5]]]
+
+build-targets = [
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+]

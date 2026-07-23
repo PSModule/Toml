@@ -1,59 +1,44 @@
-﻿function ConvertFrom-TomlDateTime {
+function ConvertFrom-TomlDateTime {
     <#
         .SYNOPSIS
-        Converts a Tomlyn TomlDateTime to the appropriate PowerShell date/time type.
+        Converts a TOML date/time token to a PowerShell date/time value.
 
         .DESCRIPTION
-        Maps each TOML date/time variant to the most natural PowerShell type:
-        - OffsetDateTimeByZ / OffsetDateTimeByNumber -> [System.DateTimeOffset]
-        - LocalDateTime                              -> [System.DateTime] (Unspecified Kind)
-        - LocalDate                                  -> [System.DateTime] (date only, 00:00:00)
-        - LocalTime                                  -> [System.TimeSpan] (time of day)
-
-        .EXAMPLE
-        ConvertFrom-TomlDateTime -TomlDt $tomlDateTimeValue
-
-        Returns a [DateTimeOffset], [DateTime], or [TimeSpan] depending on kind.
-
-        .INPUTS
-        [Tomlyn.TomlDateTime]
-
-        .OUTPUTS
-        [object] — [System.DateTimeOffset], [System.DateTime], or [System.TimeSpan]
-
-        .NOTES
-        Internal helper. Not exported. No pipeline input.
+        Parses TOML local date, local time, local date-time, and offset date-time
+        tokens and returns the corresponding PowerShell type.
     #>
     [OutputType([System.DateTimeOffset], [System.DateTime], [System.TimeSpan])]
     [CmdletBinding()]
     param(
-        # The Tomlyn TomlDateTime to convert.
         [Parameter(Mandatory)]
-        [Tomlyn.TomlDateTime] $TomlDt
+        [ValidateNotNullOrEmpty()]
+        [string] $Token
     )
 
-    switch ($TomlDt.Kind) {
-        ([Tomlyn.TomlDateTimeKind]::OffsetDateTimeByZ) {
-            return $TomlDt.DateTime
-        }
-        ([Tomlyn.TomlDateTimeKind]::OffsetDateTimeByNumber) {
-            return $TomlDt.DateTime
-        }
-        ([Tomlyn.TomlDateTimeKind]::LocalDateTime) {
-            # Strip offset — keep year/month/day/hour/minute/second as-is
-            $utc = $TomlDt.DateTime.DateTime
-            return [System.DateTime]::SpecifyKind($utc, [System.DateTimeKind]::Unspecified)
-        }
-        ([Tomlyn.TomlDateTimeKind]::LocalDate) {
-            $utc = $TomlDt.DateTime.Date
-            return [System.DateTime]::SpecifyKind($utc, [System.DateTimeKind]::Unspecified)
-        }
-        ([Tomlyn.TomlDateTimeKind]::LocalTime) {
-            return $TomlDt.DateTime.TimeOfDay
-        }
-        default {
-            # Fallback: return DateTimeOffset
-            return $TomlDt.DateTime
-        }
+    $value = $Token.Trim()
+    $culture = [System.Globalization.CultureInfo]::InvariantCulture
+    $dateStyles = [System.Globalization.DateTimeStyles]::None
+
+    if ($value -match '^\d{4}-\d{2}-\d{2}[Tt ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+\-]\d{2}:\d{2})$') {
+        $normalized = $value -replace '^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})', '$1T$2'
+        $dto = [System.DateTimeOffset]::Parse($normalized, $culture, $dateStyles)
+        return $dto
     }
+
+    if ($value -match '^\d{4}-\d{2}-\d{2}[Tt ]\d{2}:\d{2}:\d{2}(?:\.\d+)?$') {
+        $normalized = $value -replace '^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})', '$1T$2'
+        $dt = [System.DateTime]::Parse($normalized, $culture, $dateStyles)
+        return [System.DateTime]::SpecifyKind($dt, [System.DateTimeKind]::Unspecified)
+    }
+
+    if ($value -match '^\d{4}-\d{2}-\d{2}$') {
+        $dt = [System.DateTime]::ParseExact($value, 'yyyy-MM-dd', $culture, $dateStyles)
+        return [System.DateTime]::SpecifyKind($dt, [System.DateTimeKind]::Unspecified)
+    }
+
+    if ($value -match '^\d{2}:\d{2}:\d{2}(?:\.\d+)?$') {
+        return [System.TimeSpan]::Parse($value, $culture)
+    }
+
+    throw [System.InvalidOperationException]::new("Invalid TOML date/time token: '$Token'.")
 }

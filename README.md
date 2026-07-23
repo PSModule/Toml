@@ -4,7 +4,7 @@ PowerShell module for reading and writing [TOML](https://toml.io) data, with ful
 
 ## Prerequisites
 
-- PowerShell 7.2 or later
+- PowerShell 7.6 LTS
 - The [PSModule framework](https://github.com/PSModule/Process-PSModule) for building, testing and publishing the module.
 
 ## Installation
@@ -105,7 +105,7 @@ Export-Toml -InputObject $doc -Path './config.toml'
 
 ## Implementation notes
 
-- Backed by [Tomlyn v2.0.0](https://github.com/xoofx/Tomlyn), a conformant .NET TOML 1.0.0 library.
+- Implemented with in-repository PowerShell parser/serializer logic (no external TOML runtime dependency).
 - Duplicate keys and table redefinition are rejected per the TOML 1.0.0 spec.
 - Files are written as UTF-8 without BOM.
 
