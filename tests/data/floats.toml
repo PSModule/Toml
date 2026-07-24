@@ -1,0 +1,9 @@
+# Float values
+positive = 3.1415
+negative = -0.01
+exponent = 5e+22
+large = 1e6
+combo = 6.626e-34
+special_inf = inf
+special_neg_inf = -inf
+special_nan = nan

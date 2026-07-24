@@ -1,0 +1,9 @@
+# Table types
+[simple]
+key = "value"
+
+[dotted.key]
+works = true
+
+[inline_parent]
+inline = { one = 1, two = 2 }
