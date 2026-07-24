@@ -2,6 +2,23 @@ function ConvertTo-TomlTableObject {
     <#
         .SYNOPSIS
         Normalizes input data to TOML-compatible objects.
+
+        .DESCRIPTION
+        Converts any PowerShell value into a form the serializer can handle:
+        IDictionary → OrderedDictionary, PSCustomObject → OrderedDictionary,
+        IEnumerable (non-string) → object[] via ConvertTo-TomlArrayObject,
+        scalars → unchanged. Throws if the value is null.
+
+        .EXAMPLE
+        ConvertTo-TomlTableObject -Value @{ a = 1; b = 'two' }
+        # Returns: [OrderedDictionary] { a = 1, b = "two" }
+        Converts a regular hashtable to an ordered dictionary.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [object] — OrderedDictionary, object[], or the original scalar.
     #>
     [OutputType([object])]
     [CmdletBinding()]

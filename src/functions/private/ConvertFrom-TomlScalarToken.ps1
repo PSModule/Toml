@@ -2,6 +2,27 @@ function ConvertFrom-TomlScalarToken {
     <#
         .SYNOPSIS
         Converts a scalar TOML token to a PowerShell value.
+
+        .DESCRIPTION
+        Interprets a bare scalar token string as the correct PowerShell type:
+        boolean, special float (inf/nan), datetime, hex/octal/binary/decimal
+        integer, or floating-point number. Throws for unrecognized tokens.
+
+        .EXAMPLE
+        ConvertFrom-TomlScalarToken -Token 'true'
+        # Returns: [bool] $true
+        Converts the TOML boolean literal.
+
+        .EXAMPLE
+        ConvertFrom-TomlScalarToken -Token '0xFF'
+        # Returns: 255 ([long])
+        Converts a hexadecimal integer literal.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [object] — bool, double, long, DateTimeOffset, DateTime, or TimeSpan.
     #>
     [OutputType([object])]
     [CmdletBinding()]

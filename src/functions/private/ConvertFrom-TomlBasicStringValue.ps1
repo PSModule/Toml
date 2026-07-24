@@ -2,6 +2,23 @@ function ConvertFrom-TomlBasicStringValue {
     <#
         .SYNOPSIS
         Parses a TOML basic string at the current source index.
+
+        .DESCRIPTION
+        Reads a single-line basic string ("...") or a multi-line basic string ("""...""")
+        starting at $Index.Value in $Source. Processes TOML escape sequences (\n, \t,
+        \uXXXX, etc.) and advances $Index past the closing delimiter.
+
+        .EXAMPLE
+        $src = '"hello\nworld"'; $i = 0
+        ConvertFrom-TomlBasicStringValue -Source $src -Index ([ref]$i)
+        # Returns: "hello`nworld"
+        Parses a single-line basic string with an escape sequence.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [string]
     #>
     [OutputType([string])]
     [CmdletBinding()]

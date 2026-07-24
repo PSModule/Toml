@@ -1,0 +1,91 @@
+[package]
+name        = "my-awesome-lib"
+version     = "0.9.1"
+edition     = "2021"
+authors     = ["Alice <alice@example.com>", "Bob <bob@example.com>"]
+license     = "MIT OR Apache-2.0"
+description = "A library demonstrating TOML 1.0.0 features."
+readme      = "README.md"
+
+package.metadata.docs_rs.features = ["full"]
+package.metadata.docs_rs.targets  = ["x86_64-unknown-linux-gnu"]
+
+package.metadata.build_notes = '''
+Build with:
+  cargo build --release
+
+Windows cross-compile:
+  cargo build --target x86_64-pc-windows-gnu \
+    --features "tls-native"
+No escapes needed: C:\Users\Alice\project is literal.
+'''
+
+[features]
+default       = ["std", "derive"]
+full          = ["std", "derive", "async", "serde-support"]
+std           = []
+derive        = []
+async         = []
+serde-support = []
+
+[lib]
+name       = "my_awesome_lib"
+crate-type = ["rlib", "cdylib"]
+
+[package.limits]
+max-size-decimal = 1_048_576
+max-size-hex     = 0x0010_0000
+max-size-octal   = 0o4_000_000
+max-size-binary  = 0b0001_0000_0000_0000_0000_0000
+page-size        = 0o10000
+flag-bits        = 0b1100_0011
+magic-number     = 0xDEAD_BEEF
+
+[dependencies]
+serde     = { version = "1", features = ["derive"] }
+tokio     = { version = "1", features = ["full"], optional = true }
+thiserror = "1"
+tracing   = "0.1"
+
+[dependencies.reqwest]
+version          = "0.12"
+default-features = false
+features         = ["json", "rustls-tls"]
+optional         = true
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+proptest  = "1"
+tempfile  = "3"
+
+[[bench]]
+name    = "encode_throughput"
+harness = false
+
+[[bench]]
+name    = "decode_throughput"
+harness = false
+
+[[bench]]
+name    = "roundtrip"
+harness = false
+
+[[example]]
+name              = "basic_usage"
+required-features = ["std"]
+
+[[example]]
+name              = "async_client"
+required-features = ["async", "serde-support"]
+
+[profile.release]
+opt-level        = 3
+lto              = "thin"
+codegen-units    = 1
+strip            = "symbols"
+overflow-checks  = false
+
+[profile.dev]
+opt-level        = 0
+debug            = true
+overflow-checks  = true

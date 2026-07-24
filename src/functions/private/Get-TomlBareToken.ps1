@@ -2,6 +2,24 @@ function Get-TomlBareToken {
     <#
         .SYNOPSIS
         Reads a bare TOML token from source.
+
+        .DESCRIPTION
+        Advances $Index through $Source collecting characters until a delimiter
+        (comma, closing bracket, or closing brace) is encountered. When -StopAtEquals
+        is set, also stops at the equals sign, enabling bare key extraction in inline
+        tables. Returns the trimmed token.
+
+        .EXAMPLE
+        $src = 'true, 42'; $i = 0
+        Get-TomlBareToken -Source $src -Index ([ref]$i)
+        # Returns: 'true'
+        Reads a bare token up to the comma delimiter.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [string]
     #>
     [OutputType([string])]
     [CmdletBinding()]
@@ -13,7 +31,7 @@ function Get-TomlBareToken {
         [ref] $Index,
 
         [Parameter()]
-        [bool] $StopAtEquals = $false
+        [switch] $StopAtEquals
     )
 
     $start = $Index.Value

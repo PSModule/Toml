@@ -2,6 +2,29 @@ function ConvertTo-TomlValue {
     <#
         .SYNOPSIS
         Converts a normalized value to a TOML literal.
+
+        .DESCRIPTION
+        Serializes a single normalized PowerShell value to its TOML literal
+        representation: strings are quoted and escaped, booleans become true/false,
+        integers and floats use invariant-culture formatting, date/time types map to
+        their TOML forms, arrays become inline [ ... ], and dictionaries become
+        inline { ... }. Throws for null or unserializable types.
+
+        .EXAMPLE
+        ConvertTo-TomlValue -Value 'hello"world'
+        # Returns: '"hello\"world"'
+        Serializes a string containing a double quote.
+
+        .EXAMPLE
+        ConvertTo-TomlValue -Value ([System.DateTimeOffset]::Parse('1979-05-27T07:32:00Z'))
+        # Returns: '1979-05-27T07:32:00+00:00'
+        Serializes an offset date-time.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [string]
     #>
     [OutputType([string])]
     [CmdletBinding()]

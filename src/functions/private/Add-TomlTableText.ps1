@@ -2,6 +2,22 @@ function Add-TomlTableText {
     <#
         .SYNOPSIS
         Appends TOML text for a table to a string builder.
+
+        .DESCRIPTION
+        Recursively emits TOML-formatted assignments for all scalar and sub-table
+        keys in the given ordered dictionary. Sub-tables are emitted as [path] headers
+        after all scalars; arrays of tables are emitted last as [[path]] sections.
+
+        .EXAMPLE
+        $sb = [System.Text.StringBuilder]::new()
+        Add-TomlTableText -StringBuilder $sb -Table $root -Path '' -EmitHeader:$false
+        Appends all root-level keys to $sb without a section header.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [void]. Content is appended to the StringBuilder passed via -StringBuilder.
     #>
     [CmdletBinding()]
     param(
@@ -16,7 +32,7 @@ function Add-TomlTableText {
         [string] $Path,
 
         [Parameter(Mandatory)]
-        [bool] $EmitHeader
+        [switch] $EmitHeader
     )
 
     if ($EmitHeader -and -not [string]::IsNullOrEmpty($Path)) {

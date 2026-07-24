@@ -2,6 +2,28 @@ function Split-TomlDottedKey {
     <#
         .SYNOPSIS
         Splits a TOML dotted key into normalized key segments.
+
+        .DESCRIPTION
+        Tokenizes a TOML key path respecting basic-string ("...") and literal-string
+        ('...') quoting, so dots inside quoted segments are not treated as separators.
+        Quoted segments are decoded (basic) or used as-is (literal). Bare segments are
+        returned unchanged. Throws for empty segments.
+
+        .EXAMPLE
+        Split-TomlDottedKey -KeyPath 'a.b.c'
+        # Returns: @('a', 'b', 'c')
+        Splits a simple dotted key.
+
+        .EXAMPLE
+        Split-TomlDottedKey -KeyPath '"my.key".sub'
+        # Returns: @('my.key', 'sub')
+        Dot inside a quoted segment is treated as literal.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [string[]]
     #>
     [OutputType([string[]])]
     [CmdletBinding()]

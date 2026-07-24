@@ -6,6 +6,22 @@ function ConvertFrom-TomlDateTime {
         .DESCRIPTION
         Parses TOML local date, local time, local date-time, and offset date-time
         tokens and returns the corresponding PowerShell type.
+
+        .EXAMPLE
+        ConvertFrom-TomlDateTime -Token '1979-05-27T07:32:00Z'
+        # Returns: [DateTimeOffset] 1979-05-27 07:32:00 +00:00
+        Parses an offset date-time token.
+
+        .EXAMPLE
+        ConvertFrom-TomlDateTime -Token '07:32:00'
+        # Returns: [TimeSpan] 07:32:00
+        Parses a local time token.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [System.DateTimeOffset], [System.DateTime], or [System.TimeSpan] — depending on the token form.
     #>
     [OutputType([System.DateTimeOffset], [System.DateTime], [System.TimeSpan])]
     [CmdletBinding()]

@@ -34,6 +34,9 @@ $sb = [System.Text.StringBuilder]::new()
 $headerPath = Join-Path $srcPath 'header.ps1'
 if (Test-Path $headerPath) {
     $null = $sb.AppendLine((Get-Content $headerPath -Raw))
+} else {
+    $null = $sb.AppendLine('$ErrorActionPreference = ''Stop''')
+    $null = $sb.AppendLine()
 }
 
 # init

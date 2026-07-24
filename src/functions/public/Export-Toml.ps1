@@ -55,6 +55,7 @@
     )
 
     process {
+        Write-Verbose "Serializing object graph to TOML."
         $tomlString = ConvertTo-Toml -InputObject $InputObject
 
         $resolvedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
@@ -65,6 +66,7 @@
         }
 
         if ($PSCmdlet.ShouldProcess($resolvedPath, 'Write TOML file')) {
+            Write-Verbose "Writing $($tomlString.Length) character(s) to: $resolvedPath"
             [System.IO.File]::WriteAllText(
                 $resolvedPath,
                 $tomlString,

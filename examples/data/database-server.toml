@@ -1,0 +1,147 @@
+cluster.name    = "primary-pg-cluster"
+cluster.version = "16.2"
+cluster.region  = "eu-central-1"
+
+"cluster.id"    = "pg-eur-001"
+"127.0.0.1"     = "loopback-alias"
+'special chars' = "spaces in key name"
+
+[audit]
+cluster-created    = 1970-01-01T00:00:00Z
+last-failover      = 2024-03-10T02:30:00-05:00
+last-maintenance   = 2024-01-28T22:00:00+01:00
+last-config-edit   = 2024-07-22T11:45:30
+last-vacuum-start  = 2024-07-21T03:00:00.000
+certificate-expiry = 2025-08-14
+created-date       = 2022-09-01
+daily-backup-time  = 03:30:00
+maintenance-window = 22:00:00
+checkpoint-time    = 00:00:00.000
+
+[nodes.primary]
+host            = "pg-primary.internal"
+port            = 5432
+max-connections = 500
+shared-buffers  = "4GB"
+
+nodes.primary.replication.slots   = 4
+nodes.primary.replication.timeout = 60
+nodes.primary.replication.mode    = "async"
+
+[nodes.primary.wal]
+level         = "replica"
+archive       = true
+archive-dir   = "/mnt/wal-archive/primary"
+compression   = "lz4"
+keep-segments = 16
+
+[nodes.primary.checkpoint]
+completion-target = 0.9
+warning-seconds   = 30
+
+[[nodes.replicas]]
+name            = "replica-01"
+host            = "pg-replica-01.internal"
+port            = 5432
+priority        = 100
+lag-warning-ms  = 5_000
+lag-critical-ms = 30_000
+sync-mode       = "async"
+promoted        = false
+
+[nodes.replicas.connection]
+pool-size = 20
+keepalive = { idle = 60, interval = 10, count = 5 }
+
+[[nodes.replicas.slots]]
+name   = "wal_slot_app_01"
+plugin = "pgoutput"
+active = true
+
+[[nodes.replicas.slots]]
+name   = "wal_slot_analytics"
+plugin = "wal2json"
+active = false
+
+[[nodes.replicas]]
+name            = "replica-02"
+host            = "pg-replica-02.internal"
+port            = 5432
+priority        = 90
+lag-warning-ms  = 5_000
+lag-critical-ms = 30_000
+sync-mode       = "sync"
+promoted        = false
+
+[nodes.replicas.connection]
+pool-size = 15
+keepalive = { idle = 60, interval = 10, count = 5 }
+
+[[nodes.replicas.slots]]
+name   = "wal_slot_app_02"
+plugin = "pgoutput"
+active = true
+
+[storage]
+block-size-decimal = 8192
+block-size-hex     = 0x2000
+block-size-octal   = 0o20000
+block-size-binary  = 0b0010_0000_0000_0000
+
+max-table-size-dec = 1_073_741_824
+max-table-size-hex = 0x4000_0000
+
+file-permissions   = 0o600
+cache-hit-target   = 0.99
+bloat-threshold    = 0.20
+fill-factor        = 9.0e1
+compression-ratio  = 3.5e+0
+dead-tuple-ratio   = 1.0E-2
+
+[monitoring]
+scrape-interval = 15
+labels          = { cluster = "primary-pg-cluster", env = "production" }
+
+alert-thresholds = [
+    0.8,
+    0.9,
+    true,
+    "ops-team",
+]
+
+retention-windows = [
+    [60,    "raw"],
+    [3600,  "1h-rollup"],
+    [86400, "1d-rollup"],
+]
+
+[[monitoring.alerts]]
+name      = "replication-lag"
+severity  = "critical"
+threshold = 30_000
+enabled   = true
+created   = 2023-11-01
+
+[monitoring.alerts.notify]
+channels = ["pagerduty", "slack-ops"]
+cooldown = 300
+
+[[monitoring.alerts.conditions]]
+metric   = "pg_replication_lag_bytes"
+operator = ">"
+value    = 1_073_741_824
+
+[[monitoring.alerts]]
+name      = "connection-saturation"
+severity  = "warning"
+threshold = 0.85
+enabled   = true
+
+[monitoring.alerts.notify]
+channels = ["slack-ops"]
+cooldown = 600
+
+[[monitoring.alerts.conditions]]
+metric   = "pg_connections_ratio"
+operator = ">="
+value    = 0.85

@@ -48,8 +48,10 @@
 
     process {
         $resolvedPath = Resolve-Path -Path $Path -ErrorAction Stop
+        Write-Verbose "Importing TOML file: $($resolvedPath.ProviderPath)"
 
         $content = [System.IO.File]::ReadAllText($resolvedPath.ProviderPath)
+        Write-Verbose "Read $($content.Length) character(s). Parsing..."
 
         $doc = ConvertFrom-Toml -InputObject $content
         $doc.FilePath = $resolvedPath.ProviderPath

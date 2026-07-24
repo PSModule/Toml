@@ -2,6 +2,30 @@ function ConvertFrom-TomlParsedValue {
     <#
         .SYNOPSIS
         Parses a TOML value at the current source index.
+
+        .DESCRIPTION
+        Dispatches to the appropriate parser based on the leading character at
+        $Index.Value: basic string, literal string, inline array ([...]), inline
+        table ({...}), or a bare scalar token (boolean, integer, float, datetime).
+        Advances $Index past the consumed value.
+
+        .EXAMPLE
+        $src = '"hello"'; $i = 0
+        ConvertFrom-TomlParsedValue -Source $src -Index ([ref]$i)
+        # Returns: "hello"
+        Parses a basic string value.
+
+        .EXAMPLE
+        $src = '42'; $i = 0
+        ConvertFrom-TomlParsedValue -Source $src -Index ([ref]$i)
+        # Returns: 42 ([long])
+        Parses an integer value.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [object] — type depends on the TOML value kind.
     #>
     [OutputType([object])]
     [CmdletBinding()]
@@ -75,7 +99,7 @@ function ConvertFrom-TomlParsedValue {
             } elseif ($Source[$Index.Value] -eq '''') {
                 ConvertFrom-TomlLiteralStringValue -Source $Source -Index $Index
             } else {
-                Get-TomlBareToken -Source $Source -Index $Index -StopAtEquals $true
+                Get-TomlBareToken -Source $Source -Index $Index -StopAtEquals
             }
 
             Skip-TomlWhitespace -Source $Source -Index $Index

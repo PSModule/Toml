@@ -2,6 +2,23 @@ function ConvertFrom-TomlTable {
     <#
         .SYNOPSIS
         Parses a TOML document string into an ordered dictionary.
+
+        .DESCRIPTION
+        Processes TOML line-by-line: strips comments, handles standard table headers
+        ([...]), array-of-table headers ([[...]]), multi-line values (""", ''', [, {),
+        and dotted key assignments. Returns the root ordered dictionary preserving
+        key insertion order. Validates against duplicate keys and structural conflicts.
+
+        .EXAMPLE
+        ConvertFrom-TomlTable -InputObject "title = `"Test`"`n[server]`nport = 80"
+        # Returns: OrderedDictionary { title = "Test", server = { port = 80 } }
+        Parses a minimal two-key TOML document.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [System.Collections.Specialized.OrderedDictionary]
     #>
     [OutputType([System.Collections.Specialized.OrderedDictionary])]
     [CmdletBinding()]

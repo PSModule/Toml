@@ -2,6 +2,23 @@ function ConvertFrom-TomlLiteralStringValue {
     <#
         .SYNOPSIS
         Parses a TOML literal string at the current source index.
+
+        .DESCRIPTION
+        Reads a single-line literal string ('...') or a multi-line literal string ('''...''')
+        starting at $Index.Value in $Source. No escape processing is performed.
+        Advances $Index past the closing delimiter.
+
+        .EXAMPLE
+        $src = "'C:\Users\Alice'"; $i = 0
+        ConvertFrom-TomlLiteralStringValue -Source $src -Index ([ref]$i)
+        # Returns: "C:\Users\Alice"
+        Parses a literal string containing backslashes with no escape processing.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [string]
     #>
     [OutputType([string])]
     [CmdletBinding()]

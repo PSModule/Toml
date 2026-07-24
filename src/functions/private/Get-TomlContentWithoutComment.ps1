@@ -2,6 +2,22 @@ function Get-TomlContentWithoutComment {
     <#
         .SYNOPSIS
         Removes TOML inline comments while preserving quoted text.
+
+        .DESCRIPTION
+        Scans a TOML source line character-by-character, tracking basic-string and
+        literal-string context to avoid treating # inside a string as a comment
+        delimiter. Returns the content up to (but not including) the first unquoted #.
+
+        .EXAMPLE
+        Get-TomlContentWithoutComment -Line 'port = 5432 # the DB port'
+        # Returns: 'port = 5432 '
+        Strips the inline comment from a key-value line.
+
+        .INPUTS
+        None. Parameters only.
+
+        .OUTPUTS
+        [string]
     #>
     [OutputType([string])]
     [CmdletBinding()]
