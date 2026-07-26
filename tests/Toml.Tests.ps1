@@ -16,6 +16,7 @@ Describe 'Toml' {
             $commands | Should -Contain 'Import-Toml'
             $commands | Should -Contain 'Export-Toml'
             $commands | Should -Contain 'Format-Toml'
+            $commands | Should -Contain 'Test-Toml'
         }
     }
 
@@ -908,6 +909,109 @@ ports = [8001, 8002]
 
             It 'throws when the file does not exist' {
                 { Format-Toml -Path 'nonexistent-file.toml' } | Should -Throw
+            }
+        }
+    }
+
+    Describe 'Test-Toml' {
+
+        Context 'Module registration' {
+            It 'is exported from the module' {
+                Get-Command -Module Toml | Select-Object -ExpandProperty Name | Should -Contain 'Test-Toml'
+            }
+
+            It 'declares [OutputType([bool])]' {
+                $cmd = Get-Command -Name Test-Toml
+                $cmd.OutputType.Type | Should -Contain ([bool])
+            }
+        }
+
+        Context 'InputObject — valid TOML' {
+            It 'returns $true for a minimal key=value string' {
+                $result = Test-Toml -InputObject 'key = "value"'
+                $result | Should -BeTrue
+            }
+
+            It 'returns a [bool]' {
+                $result = Test-Toml -InputObject 'key = 1'
+                $result | Should -BeOfType [bool]
+            }
+
+            It 'accepts pipeline input and returns $true' {
+                $result = 'enabled = true' | Test-Toml
+                $result | Should -BeTrue
+            }
+
+            It 'returns $true for a multi-section TOML string' {
+                $toml = @'
+[server]
+host = "localhost"
+port = 8080
+'@
+                Test-Toml -InputObject $toml | Should -BeTrue
+            }
+        }
+
+        Context 'InputObject — invalid TOML' {
+            It 'returns $false for invalid syntax' {
+                $result = Test-Toml -InputObject 'bad = = "syntax"' 2>$null
+                $result | Should -BeFalse
+            }
+
+            It 'writes a non-terminating error for invalid TOML' {
+                $errors = @()
+                $result = Test-Toml -InputObject 'bad = = "syntax"' -ErrorVariable errors 2>$null
+                $result | Should -BeFalse
+                $errors | Should -Not -BeNullOrEmpty
+            }
+
+            It 'returns $false for an empty string' {
+                $result = Test-Toml -InputObject '' 2>$null
+                $result | Should -BeFalse
+            }
+
+            It 'returns $false for a duplicate-key document' {
+                $result = Test-Toml -InputObject "key = 1`nkey = 2" 2>$null
+                $result | Should -BeFalse
+            }
+        }
+
+        Context 'Path — valid file' {
+            It 'returns $true for a valid TOML file via -Path' {
+                $path = Join-Path $TestDrive 'valid.toml'
+                Set-Content -Path $path -Value 'name = "test"' -Encoding UTF8
+                Test-Toml -Path $path | Should -BeTrue
+            }
+        }
+
+        Context 'Path — invalid file' {
+            It 'returns $false for an invalid TOML file via -Path' {
+                $path = Join-Path $TestDrive 'invalid.toml'
+                Set-Content -Path $path -Value 'bad = = "syntax"' -Encoding UTF8
+                $result = Test-Toml -Path $path 2>$null
+                $result | Should -BeFalse
+            }
+
+            It 'returns $false and writes an error for a non-existent file via -Path' {
+                $errors = @()
+                $result = Test-Toml -Path (Join-Path $TestDrive 'does-not-exist.toml') -ErrorVariable errors 2>$null
+                $result | Should -BeFalse
+                $errors | Should -Not -BeNullOrEmpty
+            }
+        }
+
+        Context 'LiteralPath — valid file' {
+            It 'returns $true for a valid TOML file via -LiteralPath' {
+                $path = Join-Path $TestDrive 'literal-valid.toml'
+                Set-Content -Path $path -Value 'answer = 42' -Encoding UTF8
+                Test-Toml -LiteralPath $path | Should -BeTrue
+            }
+
+            It 'returns a [bool] via -LiteralPath' {
+                $path = Join-Path $TestDrive 'literal-bool.toml'
+                Set-Content -Path $path -Value 'flag = true' -Encoding UTF8
+                $result = Test-Toml -LiteralPath $path
+                $result | Should -BeOfType [bool]
             }
         }
     }
