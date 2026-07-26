@@ -78,6 +78,28 @@ $doc.Data['version'] = 2
 Export-Toml -InputObject $doc -Path './config.toml'
 ```
 
+### Merge two TOML documents
+
+```powershell
+$defaults = @'
+[server]
+host = "localhost"
+port = 8080
+'@
+
+$overrides = @'
+[server]
+port = 9090
+'@
+
+Merge-Toml -BaseObject $defaults -OverrideObject $overrides
+# [server]
+# host = "localhost"
+# port = 9090
+```
+
+`Merge-Toml` also accepts `-Path`/`-LiteralPath` for merging files, and a `-Strategy` of `LastWins` (default), `FirstWins`, or `ErrorOnConflict` for resolving scalar key conflicts. Nested tables are always deep-merged and arrays of tables are always concatenated.
+
 ## TOML type mapping
 
 | TOML type            | PowerShell type            |
@@ -102,6 +124,7 @@ Export-Toml -InputObject $doc -Path './config.toml'
 | `ConvertTo-Toml`  | Serialize object → TOML text             |
 | `Import-Toml`     | Read TOML file → `TomlDocument`          |
 | `Export-Toml`     | Write object or `TomlDocument` to file   |
+| `Merge-Toml`      | Merge two TOML documents into one        |
 
 ## Implementation notes
 
