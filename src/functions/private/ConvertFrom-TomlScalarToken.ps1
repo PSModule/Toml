@@ -24,7 +24,7 @@
         .OUTPUTS
         [object] — bool, double, long, DateTimeOffset, DateTime, or TimeSpan.
     #>
-    [OutputType([object])]
+    [OutputType([bool], [double], [long], [DateTimeOffset], [DateTime], [TimeSpan])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]

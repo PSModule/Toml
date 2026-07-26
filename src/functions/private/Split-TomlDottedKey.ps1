@@ -25,7 +25,7 @@
         .OUTPUTS
         [string[]]
     #>
-    [OutputType([string[]])]
+    [OutputType([string[]], [object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -104,5 +104,5 @@
         $normalized.Add($segment)
     }
 
-    return , $normalized.ToArray()
+    return , [string[]]$normalized.ToArray([string])
 }

@@ -20,7 +20,7 @@
         .OUTPUTS
         [object] — OrderedDictionary, object[], or the original scalar.
     #>
-    [OutputType([object])]
+    [OutputType([System.Collections.Specialized.OrderedDictionary], [object[]], [object])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]

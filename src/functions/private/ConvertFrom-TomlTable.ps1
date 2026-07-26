@@ -50,13 +50,13 @@
                 throw [System.InvalidOperationException]::new('Invalid array-of-tables header.')
             }
 
-                # Clear headers from sub-tables of any previous entry in this same array,
-                # so that each [[arr]] entry may independently define [arr.sub] headers.
-                $aoKeyPath = Join-TomlKeyPath -Segments $pathSegments
-                $toRemove = $definedHeaders | Where-Object { $_ -eq $aoKeyPath -or $_.StartsWith("$aoKeyPath.") }
-                foreach ($h in @($toRemove)) {
-                    $null = $definedHeaders.Remove($h)
-                }
+            # Clear headers from sub-tables of any previous entry in this same array,
+            # so that each [[arr]] entry may independently define [arr.sub] headers.
+            $aoKeyPath = Join-TomlKeyPath -Segments $pathSegments
+            $toRemove = $definedHeaders | Where-Object { $_ -eq $aoKeyPath -or $_.StartsWith("$aoKeyPath.") }
+            foreach ($h in @($toRemove)) {
+                $null = $definedHeaders.Remove($h)
+            }
 
             $parentSegments = if ($pathSegments.Count -gt 1) { $pathSegments[0..($pathSegments.Count - 2)] } else { @() }
             $name = $pathSegments[-1]
