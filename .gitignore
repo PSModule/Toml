@@ -17,3 +17,6 @@ output/
 bin/
 obj/
 libs/
+
+# Pester test output
+testResults.xml
