@@ -12,13 +12,31 @@
 [CmdletBinding()]
 param(
     # Version to stamp into the manifest.
-    [string] $ModuleVersion = '0.0.1'
+    [Alias('ModuleVersion')]
+    [string] $Version,
+
+    # Optional prerelease label to stamp into PrivateData.PSData.Prerelease.
+    [string] $Prerelease
 )
 
 $ErrorActionPreference = 'Stop'
 $moduleName = 'Toml'
 $srcPath = Join-Path $PSScriptRoot 'src'
 $outputPath = Join-Path -Path $PSScriptRoot -ChildPath 'output' -AdditionalChildPath $moduleName
+$resolvedVersion = if (-not [string]::IsNullOrWhiteSpace($Version)) {
+    $Version
+} elseif (-not [string]::IsNullOrWhiteSpace($env:PSMODULE_BUILD_PSMODULE_INPUT_Version)) {
+    $env:PSMODULE_BUILD_PSMODULE_INPUT_Version
+} else {
+    '0.0.1'
+}
+$resolvedPrerelease = if (-not [string]::IsNullOrWhiteSpace($Prerelease)) {
+    $Prerelease
+} elseif (-not [string]::IsNullOrWhiteSpace($env:PSMODULE_BUILD_PSMODULE_INPUT_Prerelease)) {
+    $env:PSMODULE_BUILD_PSMODULE_INPUT_Prerelease
+} else {
+    ''
+}
 
 # ── clean / create output directory ─────────────────────────────────────────
 if (Test-Path $outputPath) {
@@ -116,7 +134,7 @@ $null = $sb.AppendLine("Export-ModuleMember -Function @($($publicFunctions | For
 $psd1Path = Join-Path $outputPath "$moduleName.psd1"
 $manifest = @{
     Path              = $psd1Path
-    ModuleVersion     = $ModuleVersion
+    ModuleVersion     = $resolvedVersion
     RootModule        = "$moduleName.psm1"
     FunctionsToExport = $publicFunctions.ToArray()
     PowerShellVersion = '7.6'
@@ -127,5 +145,9 @@ $manifest = @{
 }
 New-ModuleManifest @manifest
 
-Write-Output "Built $moduleName $ModuleVersion -> $outputPath"
+if (-not [string]::IsNullOrWhiteSpace($resolvedPrerelease)) {
+    Write-Output "Built $moduleName $resolvedVersion-$resolvedPrerelease -> $outputPath"
+} else {
+    Write-Output "Built $moduleName $resolvedVersion -> $outputPath"
+}
 Write-Output "Public functions: $($publicFunctions -join ', ')"
