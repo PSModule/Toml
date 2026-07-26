@@ -92,6 +92,28 @@ indentation semantics; `-Indent` (default `2`) only controls how many spaces
 are used to visually nest table headers and their keys by depth. Set
 `-Indent 0` for the flat, unindented form.
 
+### Merge two TOML documents
+
+```powershell
+$defaults = @'
+[server]
+host = "localhost"
+port = 8080
+'@
+
+$overrides = @'
+[server]
+port = 9090
+'@
+
+Merge-Toml -BaseObject $defaults -OverrideObject $overrides
+# [server]
+# host = "localhost"
+# port = 9090
+```
+
+`Merge-Toml` also accepts `-Path`/`-LiteralPath` for merging files, and a `-Strategy` of `LastWins` (default), `FirstWins`, or `ErrorOnConflict` for resolving scalar key conflicts. Nested tables are always deep-merged and arrays of tables are always concatenated.
+
 ## TOML type mapping
 
 | TOML type            | PowerShell type            |
@@ -117,6 +139,7 @@ are used to visually nest table headers and their keys by depth. Set
 | `Import-Toml`     | Read TOML file → `TomlDocument`          |
 | `Export-Toml`     | Write object or `TomlDocument` to file   |
 | `Format-Toml`     | Normalize TOML text to canonical form    |
+| `Merge-Toml`      | Merge two TOML documents into one        |
 
 ## Implementation notes
 

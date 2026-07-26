@@ -913,6 +913,148 @@ ports = [8001, 8002]
         }
     }
 
+    Describe 'Merge-Toml' {
+        BeforeAll {
+            $baseDoc = @'
+title = "base"
+shared = "base-value"
+[server]
+host = "localhost"
+port = 8080
+[[items]]
+name = "base-item"
+'@
+
+            $overrideDoc = @'
+extra = "override-only"
+shared = "override-value"
+[server]
+port = 9090
+timeout = 30
+[[items]]
+name = "override-item"
+'@
+        }
+
+        Context 'Return type' {
+            It 'returns a string' {
+                $result = Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc
+                $result | Should -BeOfType [string]
+            }
+
+            It 'produces output parseable by ConvertFrom-Toml' {
+                $result = Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc
+                { ConvertFrom-Toml -InputObject $result } | Should -Not -Throw
+            }
+        }
+
+        Context 'Key preservation' {
+            It 'keeps base-only keys' {
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc)
+                $result.Data['title'] | Should -Be 'base'
+            }
+
+            It 'adds override-only keys' {
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc)
+                $result.Data['extra'] | Should -Be 'override-only'
+            }
+        }
+
+        Context 'Strategy: LastWins' {
+            It 'uses the override value on scalar conflict' {
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc -Strategy 'LastWins')
+                $result.Data['shared'] | Should -Be 'override-value'
+            }
+
+            It 'is the default strategy' {
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc)
+                $result.Data['shared'] | Should -Be 'override-value'
+            }
+        }
+
+        Context 'Strategy: FirstWins' {
+            It 'keeps the base value on scalar conflict' {
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc -Strategy 'FirstWins')
+                $result.Data['shared'] | Should -Be 'base-value'
+            }
+        }
+
+        Context 'Strategy: ErrorOnConflict' {
+            It 'throws on any duplicate scalar key' {
+                { Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc -Strategy 'ErrorOnConflict' } | Should -Throw
+            }
+
+            It 'does not throw when there are no scalar conflicts' {
+                $noConflict = 'onlyhere = "value"'
+                { Merge-Toml -BaseObject $baseDoc -OverrideObject $noConflict -Strategy 'ErrorOnConflict' } | Should -Not -Throw
+            }
+        }
+
+        Context 'Nested tables' {
+            It 'deep-merges keys from both sides' {
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc)
+                $result.Data['server']['host'] | Should -Be 'localhost'
+                $result.Data['server']['timeout'] | Should -Be 30
+            }
+
+            It 'applies the strategy to nested scalar conflicts' {
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc -Strategy 'FirstWins')
+                $result.Data['server']['port'] | Should -Be 8080
+            }
+        }
+
+        Context 'Arrays of tables' {
+            It 'concatenates base entries before override entries' {
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -BaseObject $baseDoc -OverrideObject $overrideDoc)
+                $result.Data['items'].Count | Should -Be 2
+                $result.Data['items'][0]['name'] | Should -Be 'base-item'
+                $result.Data['items'][1]['name'] | Should -Be 'override-item'
+            }
+        }
+
+        Context 'File input via -Path' {
+            It 'merges two files in order' {
+                $basePath = Join-Path $TestDrive 'merge-base.toml'
+                $overridePath = Join-Path $TestDrive 'merge-override.toml'
+                Set-Content -Path $basePath -Value $baseDoc -NoNewline
+                Set-Content -Path $overridePath -Value $overrideDoc -NoNewline
+
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -Path $basePath, $overridePath)
+                $result.Data['title'] | Should -Be 'base'
+                $result.Data['shared'] | Should -Be 'override-value'
+            }
+        }
+
+        Context 'File input via -LiteralPath' {
+            It 'merges two files in order' {
+                $basePath = Join-Path $TestDrive 'merge-literal-base.toml'
+                $overridePath = Join-Path $TestDrive 'merge-literal-override.toml'
+                Set-Content -Path $basePath -Value $baseDoc -NoNewline
+                Set-Content -Path $overridePath -Value $overrideDoc -NoNewline
+
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -LiteralPath $basePath, $overridePath)
+                $result.Data['title'] | Should -Be 'base'
+                $result.Data['shared'] | Should -Be 'override-value'
+            }
+        }
+
+        Context 'Idempotency' {
+            It 'merging identical documents under FirstWins returns the base document unchanged' {
+                # Uses a document without arrays of tables, since AoT entries are always
+                # concatenated regardless of strategy and would not be idempotent.
+                $scalarOnlyDoc = @'
+title = "base"
+[server]
+host = "localhost"
+port = 8080
+'@
+                $result = ConvertFrom-Toml -InputObject (Merge-Toml -BaseObject $scalarOnlyDoc -OverrideObject $scalarOnlyDoc -Strategy 'FirstWins')
+                $expected = ConvertFrom-Toml -InputObject $scalarOnlyDoc
+                ConvertTo-Toml -InputObject $result.Data | Should -Be (ConvertTo-Toml -InputObject $expected.Data)
+            }
+        }
+    }
+
     Describe 'Test-Toml' {
 
         Context 'Module registration' {
