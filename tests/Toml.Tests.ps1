@@ -15,7 +15,7 @@ Describe 'Toml' {
             $commands | Should -Contain 'ConvertTo-Toml'
             $commands | Should -Contain 'Import-Toml'
             $commands | Should -Contain 'Export-Toml'
-            $commands | Should -Contain 'Merge-Toml'
+            $commands | Should -Contain 'Format-Toml'
             $commands | Should -Contain 'Test-Toml'
         }
     }
@@ -800,6 +800,115 @@ Describe 'Toml' {
         Context 'Error handling' {
             It 'throws on null InputObject' {
                 { Export-Toml -InputObject $null -Path (Join-Path $TestDrive 'null.toml') } | Should -Throw
+            }
+        }
+    }
+
+    Describe 'Format-Toml' {
+
+        Context 'Return type' {
+            It 'returns a string' {
+                $result = Format-Toml -InputObject 'key = "value"'
+                $result | Should -BeOfType [string]
+            }
+        }
+
+        Context 'Normalization' {
+            It 'normalizes inconsistent key quoting' {
+                $result = Format-Toml -InputObject @'
+"quoted" = 1
+bare = 2
+'@
+                $result | Should -Match 'quoted = 1'
+                $result | Should -Match 'bare = 2'
+            }
+
+            It 'is semantically equivalent to ConvertFrom-Toml | ConvertTo-Toml' {
+                $source = @'
+title = "My App"
+[server]
+port = 8080
+'@
+                $expected = ConvertTo-Toml -InputObject (ConvertFrom-Toml -InputObject $source)
+                (Format-Toml -InputObject $source -Indent 0) | Should -Be $expected
+            }
+
+            It 'indents nested tables by nesting depth' {
+                $result = Format-Toml -InputObject "[a]`nx = 1`n[a.b]`ny = 2" -Indent 2
+                $result | Should -Match "(?m)^  x = 1\r?$"
+                $result | Should -Match "(?m)^  \[a\.b\]\r?$"
+                $result | Should -Match "(?m)^    y = 2\r?$"
+            }
+
+            It 'produces flat, unindented output when Indent is 0' {
+                $result = Format-Toml -InputObject "[a]`nx = 1`n[a.b]`ny = 2" -Indent 0
+                $result | Should -Match "(?m)^x = 1\r?$"
+                $result | Should -Match "(?m)^y = 2\r?$"
+            }
+        }
+
+        Context 'Idempotency' {
+            It 'formatting already-canonical text returns the same text' {
+                $source = @'
+title = "My App"
+[server]
+host = "localhost"
+port = 8080
+[server.nested]
+key = "value"
+'@
+                $once = Format-Toml -InputObject $source
+                $twice = Format-Toml -InputObject $once
+                $twice | Should -Be $once
+            }
+        }
+
+        Context 'Round-trip validity' {
+            It 'output remains parseable by ConvertFrom-Toml' {
+                $source = @'
+[database]
+host = "db.example.com"
+ports = [8001, 8002]
+'@
+                $formatted = Format-Toml -InputObject $source
+                $parsed = ConvertFrom-Toml -InputObject $formatted
+                $parsed.Data['database']['host'] | Should -Be 'db.example.com'
+                $parsed.Data['database']['ports'] | Should -HaveCount 2
+            }
+        }
+
+        Context 'Pipeline' {
+            It 'accepts InputObject from the pipeline' {
+                $result = 'key = "value"' | Format-Toml
+                $result | Should -Match 'key = "value"'
+            }
+        }
+
+        Context 'Path parameter' {
+            It 'reads a file and returns normalized TOML text' {
+                $path = Join-Path $TestDrive 'input.toml'
+                Set-Content -Path $path -Value '"quoted"=1' -NoNewline
+                $result = Format-Toml -Path $path
+                $result | Should -Match 'quoted = 1'
+            }
+        }
+
+        Context 'LiteralPath parameter' {
+            It 'reads a file and returns normalized TOML text' {
+                $path = Join-Path $TestDrive 'literal.toml'
+                Set-Content -Path $path -Value '"quoted"=1' -NoNewline
+                $result = Format-Toml -LiteralPath $path
+                $result | Should -Match 'quoted = 1'
+            }
+        }
+
+        Context 'Error handling' {
+            It 'throws on invalid TOML input' {
+                { Format-Toml -InputObject 'invalid = = "bad"' } | Should -Throw
+            }
+
+            It 'throws when the file does not exist' {
+                { Format-Toml -Path 'nonexistent-file.toml' } | Should -Throw
             }
         }
     }

@@ -78,6 +78,20 @@ $doc.Data['version'] = 2
 Export-Toml -InputObject $doc -Path './config.toml'
 ```
 
+### Normalize TOML text
+
+```powershell
+Get-Content 'Cargo.toml' -Raw | Format-Toml
+Format-Toml -Path 'Cargo.toml' -Indent 4
+```
+
+`Format-Toml` parses then re-serializes TOML text, producing consistent key
+quoting and canonical scalar forms — equivalent to
+`ConvertFrom-Toml | ConvertTo-Toml` as a single call. TOML itself has no
+indentation semantics; `-Indent` (default `2`) only controls how many spaces
+are used to visually nest table headers and their keys by depth. Set
+`-Indent 0` for the flat, unindented form.
+
 ### Merge two TOML documents
 
 ```powershell
@@ -124,6 +138,7 @@ Merge-Toml -BaseObject $defaults -OverrideObject $overrides
 | `ConvertTo-Toml`  | Serialize object → TOML text             |
 | `Import-Toml`     | Read TOML file → `TomlDocument`          |
 | `Export-Toml`     | Write object or `TomlDocument` to file   |
+| `Format-Toml`     | Normalize TOML text to canonical form    |
 | `Merge-Toml`      | Merge two TOML documents into one        |
 
 ## Implementation notes

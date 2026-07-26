@@ -50,6 +50,21 @@ Write-Host $toml
 # $doc.Data['version'] = 3
 # Export-Toml -InputObject $doc -Path './config.toml'
 
+# ── Normalize TOML text ────────────────────────────────────────────────────
+$normalized = Format-Toml -InputObject @'
+title="My App"
+[server]
+host="localhost"
+port=8080
+'@
+Write-Host $normalized
+# title = "My App"
+#
+# [server]
+#   host = "localhost"
+#   port = 8080
+
+
 # ── Pipeline usage ─────────────────────────────────────────────────────────
 # '[server]
 # host = "localhost"' | ConvertFrom-Toml | ConvertTo-Toml
