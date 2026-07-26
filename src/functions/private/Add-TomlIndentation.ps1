@@ -1,4 +1,4 @@
-function Add-TomlIndentation {
+﻿function Add-TomlIndentation {
     <#
         .SYNOPSIS
         Indents nested TOML table sections by nesting depth.

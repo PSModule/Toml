@@ -1,4 +1,4 @@
-function ConvertTo-Toml {
+﻿function ConvertTo-Toml {
     <#
         .SYNOPSIS
         Converts a PowerShell object graph to TOML text.

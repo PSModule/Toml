@@ -26,16 +26,16 @@ $doc.Data.database.credentials.user  # "admin"
 
 # ── Serialize to TOML ──────────────────────────────────────────────────────
 $toml = ConvertTo-Toml -InputObject ([ordered]@{
-    title   = 'My Application'
-    version = 2
-    debug   = $false
-    server  = [ordered]@{
+    title    = 'My Application'
+    version  = 2
+    debug    = $false
+    server   = [ordered]@{
         host = '0.0.0.0'
         port = 8080
     }
     features = @('auth', 'logging', 'metrics')
 })
-Write-Host $toml
+Write-Output $toml
 
 # ── Import from file ───────────────────────────────────────────────────────
 # $doc = Import-Toml -Path './config.toml'

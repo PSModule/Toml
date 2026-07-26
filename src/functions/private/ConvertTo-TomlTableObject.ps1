@@ -1,4 +1,4 @@
-function ConvertTo-TomlTableObject {
+﻿function ConvertTo-TomlTableObject {
     <#
         .SYNOPSIS
         Normalizes input data to TOML-compatible objects.

@@ -1,4 +1,4 @@
-function ConvertFrom-TomlScalarToken {
+﻿function ConvertFrom-TomlScalarToken {
     <#
         .SYNOPSIS
         Converts a scalar TOML token to a PowerShell value.

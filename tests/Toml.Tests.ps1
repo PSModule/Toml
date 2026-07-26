@@ -1,4 +1,4 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Required for Pester tests')]
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Required for Pester tests')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Required for Pester tests')]
 [CmdletBinding()]
 param()
@@ -328,7 +328,19 @@ Describe 'Toml' {
             }
 
             It 'parses sub-tables independently per array entry' {
-                $toml = "[[stages]]`nname = `"build`"`n`n  [stages.env]`n  KEY = `"A`"`n`n[[stages]]`nname = `"test`"`n`n  [stages.env]`n  KEY = `"B`""
+                $toml = @'
+[[stages]]
+name = "build"
+
+  [stages.env]
+  KEY = "A"
+
+[[stages]]
+name = "test"
+
+  [stages.env]
+  KEY = "B"
+'@
                 $result = ConvertFrom-Toml -InputObject $toml
                 $result.Data['stages'][0]['env']['KEY'] | Should -Be 'A'
                 $result.Data['stages'][1]['env']['KEY'] | Should -Be 'B'

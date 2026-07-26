@@ -1,4 +1,4 @@
-function ConvertFrom-TomlValue {
+﻿function ConvertFrom-TomlValue {
     <#
         .SYNOPSIS
         Converts a TOML value token to a native PowerShell value.

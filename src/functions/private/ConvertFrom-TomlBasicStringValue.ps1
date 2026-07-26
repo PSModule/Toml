@@ -1,4 +1,4 @@
-function ConvertFrom-TomlBasicStringValue {
+﻿function ConvertFrom-TomlBasicStringValue {
     <#
         .SYNOPSIS
         Parses a TOML basic string at the current source index.

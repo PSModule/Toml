@@ -1,4 +1,4 @@
-function ConvertFrom-TomlDateTime {
+﻿function ConvertFrom-TomlDateTime {
     <#
         .SYNOPSIS
         Converts a TOML date/time token to a PowerShell date/time value.

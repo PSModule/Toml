@@ -1,4 +1,4 @@
-function ConvertFrom-TomlParsedValue {
+﻿function ConvertFrom-TomlParsedValue {
     <#
         .SYNOPSIS
         Parses a TOML value at the current source index.

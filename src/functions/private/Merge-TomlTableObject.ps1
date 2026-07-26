@@ -1,4 +1,4 @@
-function Merge-TomlTableObject {
+﻿function Merge-TomlTableObject {
     <#
         .SYNOPSIS
         Recursively merges two TOML table dictionaries.

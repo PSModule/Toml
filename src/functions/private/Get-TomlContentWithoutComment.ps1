@@ -1,4 +1,4 @@
-function Get-TomlContentWithoutComment {
+﻿function Get-TomlContentWithoutComment {
     <#
         .SYNOPSIS
         Removes TOML inline comments while preserving quoted text.

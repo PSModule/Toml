@@ -1,4 +1,4 @@
-function Join-TomlKeyPath {
+﻿function Join-TomlKeyPath {
     <#
         .SYNOPSIS
         Joins key path segments into a dotted path.

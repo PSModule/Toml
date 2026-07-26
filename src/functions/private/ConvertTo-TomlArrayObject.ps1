@@ -1,4 +1,4 @@
-function ConvertTo-TomlArrayObject {
+﻿function ConvertTo-TomlArrayObject {
     <#
         .SYNOPSIS
         Normalizes a PowerShell enumerable to a TOML-compatible array.

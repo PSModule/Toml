@@ -1,4 +1,4 @@
-function Add-TomlTableText {
+﻿function Add-TomlTableText {
     <#
         .SYNOPSIS
         Appends TOML text for a table to a string builder.

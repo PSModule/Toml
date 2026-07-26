@@ -1,4 +1,4 @@
-function Test-Toml {
+﻿function Test-Toml {
     <#
         .SYNOPSIS
         Tests whether a string or file contains valid TOML.

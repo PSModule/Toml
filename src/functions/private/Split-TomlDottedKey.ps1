@@ -1,4 +1,4 @@
-function Split-TomlDottedKey {
+﻿function Split-TomlDottedKey {
     <#
         .SYNOPSIS
         Splits a TOML dotted key into normalized key segments.

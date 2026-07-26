@@ -1,4 +1,4 @@
-function Merge-Toml {
+﻿function Merge-Toml {
     <#
         .SYNOPSIS
         Merges two or more TOML documents into one.

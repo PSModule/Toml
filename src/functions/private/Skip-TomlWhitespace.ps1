@@ -1,4 +1,4 @@
-function Skip-TomlWhitespace {
+﻿function Skip-TomlWhitespace {
     <#
         .SYNOPSIS
         Advances an index past whitespace in a TOML source string.

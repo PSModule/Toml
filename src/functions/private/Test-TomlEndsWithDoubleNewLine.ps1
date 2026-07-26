@@ -1,4 +1,4 @@
-function Test-TomlEndsWithDoubleNewLine {
+﻿function Test-TomlEndsWithDoubleNewLine {
     <#
         .SYNOPSIS
         Tests whether a StringBuilder ends with two LF characters.

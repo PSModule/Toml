@@ -1,4 +1,4 @@
-function Format-Toml {
+﻿function Format-Toml {
     <#
         .SYNOPSIS
         Normalizes TOML text to a canonical form.

@@ -132,14 +132,15 @@ Merge-Toml -BaseObject $defaults -OverrideObject $overrides
 
 ## Commands
 
-| Command           | Description                              |
-|-------------------|------------------------------------------|
-| `ConvertFrom-Toml` | Parse TOML text → `TomlDocument`        |
-| `ConvertTo-Toml`  | Serialize object → TOML text             |
-| `Import-Toml`     | Read TOML file → `TomlDocument`          |
-| `Export-Toml`     | Write object or `TomlDocument` to file   |
-| `Format-Toml`     | Normalize TOML text to canonical form    |
-| `Merge-Toml`      | Merge two TOML documents into one        |
+| Command             | Description                              |
+|---------------------|------------------------------------------|
+| `ConvertFrom-Toml`  | Parse TOML text → `TomlDocument`         |
+| `ConvertTo-Toml`    | Serialize object → TOML text             |
+| `Import-Toml`       | Read TOML file → `TomlDocument`          |
+| `Export-Toml`       | Write object or `TomlDocument` to file   |
+| `Format-Toml`       | Normalize TOML text to canonical form    |
+| `Test-Toml`         | Validate TOML text without throwing      |
+| `Merge-Toml`        | Merge two TOML documents into one        |
 
 ## Implementation notes
 

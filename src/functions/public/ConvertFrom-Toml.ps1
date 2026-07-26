@@ -1,4 +1,4 @@
-function ConvertFrom-Toml {
+﻿function ConvertFrom-Toml {
     <#
         .SYNOPSIS
         Converts TOML text to a TomlDocument.

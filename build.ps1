@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 #Requires -Version 7.0
 <#
     .SYNOPSIS
@@ -16,9 +16,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$moduleName  = 'Toml'
-$srcPath     = Join-Path $PSScriptRoot 'src'
-$outputPath  = Join-Path $PSScriptRoot 'output' $moduleName
+$moduleName = 'Toml'
+$srcPath = Join-Path $PSScriptRoot 'src'
+$outputPath = Join-Path $PSScriptRoot 'output' $moduleName
 
 # ── clean / create output directory ─────────────────────────────────────────
 if (Test-Path $outputPath) {
@@ -70,10 +70,46 @@ if (Test-Path $finallyPath) {
     $null = $sb.AppendLine((Get-Content $finallyPath -Raw))
 }
 
+# class exporter — registers public classes as type accelerators (required by PSModule framework)
+$null = $sb.AppendLine(@'
+#region Class exporter
+$TypeAcceleratorsClass = [psobject].Assembly.GetType('System.Management.Automation.TypeAccelerators')
+$ExistingTypeAccelerators = $TypeAcceleratorsClass::Get
+$ExportableEnums = @(
+)
+$ExportableEnums | ForEach-Object { Write-Verbose "Exporting enum '$($_.FullName)'." }
+foreach ($Type in $ExportableEnums) {
+    if ($Type.FullName -in $ExistingTypeAccelerators.Keys) {
+        Write-Verbose "Enum already exists [$($Type.FullName)]. Skipping."
+    } else {
+        Write-Verbose "Importing enum '$Type'."
+        $TypeAcceleratorsClass::Add($Type.FullName, $Type)
+    }
+}
+$ExportableClasses = @(
+    [TomlDocument]
+)
+$ExportableClasses | ForEach-Object { Write-Verbose "Exporting class '$($_.FullName)'." }
+foreach ($Type in $ExportableClasses) {
+    if ($Type.FullName -in $ExistingTypeAccelerators.Keys) {
+        Write-Verbose "Class already exists [$($Type.FullName)]. Skipping."
+    } else {
+        Write-Verbose "Importing class '$Type'."
+        $TypeAcceleratorsClass::Add($Type.FullName, $Type)
+    }
+}
+$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
+    foreach ($Type in ($ExportableEnums + $ExportableClasses)) {
+        $null = $TypeAcceleratorsClass::Remove($Type.FullName)
+    }
+}.GetNewClosure()
+#endregion Class exporter
+'@)
+
 # Export-ModuleMember
 $null = $sb.AppendLine("Export-ModuleMember -Function @($($publicFunctions | ForEach-Object { "'$_'" } | Join-String -Separator ', '))")
 
-[System.IO.File]::WriteAllText($psm1Path, $sb.ToString(), [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText($psm1Path, $sb.ToString(), [System.Text.UTF8Encoding]::new($true))
 
 # ── write manifest ────────────────────────────────────────────────────────────
 $psd1Path = Join-Path $outputPath "$moduleName.psd1"
@@ -90,5 +126,5 @@ $manifest = @{
 }
 New-ModuleManifest @manifest
 
-Write-Host "Built $moduleName $ModuleVersion -> $outputPath"
-Write-Host "Public functions: $($publicFunctions -join ', ')"
+Write-Output "Built $moduleName $ModuleVersion -> $outputPath"
+Write-Output "Public functions: $($publicFunctions -join ', ')"

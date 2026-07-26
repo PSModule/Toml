@@ -1,4 +1,4 @@
-function ConvertFrom-TomlLiteralStringValue {
+﻿function ConvertFrom-TomlLiteralStringValue {
     <#
         .SYNOPSIS
         Parses a TOML literal string at the current source index.

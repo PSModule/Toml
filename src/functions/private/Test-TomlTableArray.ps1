@@ -1,4 +1,4 @@
-function Test-TomlTableArray {
+﻿function Test-TomlTableArray {
     <#
         .SYNOPSIS
         Tests whether a value is an array of TOML tables.

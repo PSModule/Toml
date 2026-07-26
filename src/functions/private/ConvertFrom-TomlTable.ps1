@@ -1,4 +1,4 @@
-function ConvertFrom-TomlTable {
+﻿function ConvertFrom-TomlTable {
     <#
         .SYNOPSIS
         Parses a TOML document string into an ordered dictionary.

@@ -1,4 +1,4 @@
-# Represents a parsed TOML document.
+﻿# Represents a parsed TOML document.
 # Exposes the root key-value data as an ordered dictionary and records the
 # file path when the document was loaded from disk.
 class TomlDocument {

@@ -1,4 +1,4 @@
-function Format-TomlKey {
+﻿function Format-TomlKey {
     <#
         .SYNOPSIS
         Formats a key for TOML output.

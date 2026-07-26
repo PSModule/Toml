@@ -1,4 +1,4 @@
-function Get-TomlBareToken {
+﻿function Get-TomlBareToken {
     <#
         .SYNOPSIS
         Reads a bare TOML token from source.

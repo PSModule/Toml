@@ -1,4 +1,4 @@
-function Get-TomlNestedTable {
+﻿function Get-TomlNestedTable {
     <#
         .SYNOPSIS
         Resolves or creates nested table path segments.

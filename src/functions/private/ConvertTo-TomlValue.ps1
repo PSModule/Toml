@@ -1,4 +1,4 @@
-function ConvertTo-TomlValue {
+﻿function ConvertTo-TomlValue {
     <#
         .SYNOPSIS
         Converts a normalized value to a TOML literal.
