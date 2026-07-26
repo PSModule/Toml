@@ -76,6 +76,7 @@ $null = $sb.AppendLine(@'
 $TypeAcceleratorsClass = [psobject].Assembly.GetType('System.Management.Automation.TypeAccelerators')
 $ExistingTypeAccelerators = $TypeAcceleratorsClass::Get
 $ExportableEnums = @(
+    [TomlValueKind]
 )
 $ExportableEnums | ForEach-Object { Write-Verbose "Exporting enum '$($_.FullName)'." }
 foreach ($Type in $ExportableEnums) {

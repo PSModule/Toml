@@ -521,9 +521,10 @@ name = "test"
 
         Context 'Nested tables and arrays' {
             It 'serializes a nested ordered dict as a TOML table header' {
-                $result = ConvertTo-Toml -InputObject ([ordered]@{
+                $inputData = [ordered]@{
                     server = [ordered]@{ host = 'localhost'; port = [long]8080 }
-                })
+                }
+                $result = ConvertTo-Toml -InputObject $inputData
                 $result | Should -Match '\[server\]'
                 $result | Should -Match 'host = "localhost"'
             }
@@ -573,9 +574,10 @@ name = "test"
             }
 
             It 'nested table survives a round-trip' {
-                $toml = ConvertTo-Toml -InputObject ([ordered]@{
+                $inputData = [ordered]@{
                     database = [ordered]@{ host = 'db.example.com'; port = [long]5432 }
-                })
+                }
+                $toml = ConvertTo-Toml -InputObject $inputData
                 $rt = (ConvertFrom-Toml -InputObject $toml).Data
                 $rt['database']['host'] | Should -Be 'db.example.com'
                 $rt['database']['port'] | Should -Be 5432

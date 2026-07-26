@@ -25,7 +25,7 @@ $doc.Data.database.tags            # @("production", "primary")
 $doc.Data.database.credentials.user  # "admin"
 
 # ── Serialize to TOML ──────────────────────────────────────────────────────
-$toml = ConvertTo-Toml -InputObject ([ordered]@{
+$appData = [ordered]@{
     title    = 'My Application'
     version  = 2
     debug    = $false
@@ -34,7 +34,8 @@ $toml = ConvertTo-Toml -InputObject ([ordered]@{
         port = 8080
     }
     features = @('auth', 'logging', 'metrics')
-})
+}
+$toml = ConvertTo-Toml -InputObject $appData
 Write-Output $toml
 
 # ── Import from file ───────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ title="My App"
 host="localhost"
 port=8080
 '@
-Write-Host $normalized
+Write-Output $normalized
 # title = "My App"
 #
 # [server]
