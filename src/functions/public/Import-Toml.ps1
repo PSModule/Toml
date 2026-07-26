@@ -23,7 +23,9 @@
         Pipes the document and inspects the data dictionary.
 
         .INPUTS
-        [string] — pipeline input supported for the Path parameter.
+        [string]
+
+        Pipeline input is supported for the Path parameter.
 
         .OUTPUTS
         [TomlDocument]

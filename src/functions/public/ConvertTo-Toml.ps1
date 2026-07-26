@@ -35,7 +35,9 @@
         Round-trips a TOML file back to TOML text.
 
         .INPUTS
-        [object] — pipeline input supported.
+        [object]
+
+        Pipeline input is supported.
 
         .OUTPUTS
         [string]

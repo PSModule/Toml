@@ -5,7 +5,7 @@
 
         .DESCRIPTION
         Re-indents already-serialized TOML text so that table headers and their
-        key/value lines are prefixed with spaces proportional to the table's nesting
+        key-value lines are prefixed with spaces proportional to the table's nesting
         depth. Depth is derived from the dotted path in each `[path]` / `[[path]]`
         header — a root table has depth 1, `[a.b]` has depth 2, and so on. Header
         lines are indented one level shallower than the keys they contain, so the

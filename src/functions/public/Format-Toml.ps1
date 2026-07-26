@@ -13,7 +13,7 @@
         TOML itself is a flat, whitespace-insensitive format — nested tables are
         represented as `[a.b]` headers rather than indented blocks, so there is no
         spec-defined meaning for indentation. The `-Indent` parameter is offered as
-        a display convention only: it prefixes each table header and its key/value
+        a display convention only: it prefixes each table header and its key-value
         lines with spaces proportional to the table's nesting depth (as some TOML
         formatters, such as Taplo, do). This never changes the parsed value of the
         document. Set `-Indent 0` to disable it and keep the flat, unindented form
@@ -42,7 +42,9 @@
         wildcard expansion.
 
         .INPUTS
-        [string] — pipeline input supported for the InputObject parameter.
+        [string]
+
+        Pipeline input is supported for the InputObject parameter.
 
         .OUTPUTS
         [string]

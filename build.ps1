@@ -18,7 +18,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $moduleName = 'Toml'
 $srcPath = Join-Path $PSScriptRoot 'src'
-$outputPath = Join-Path $PSScriptRoot 'output' $moduleName
+$outputPath = Join-Path -Path $PSScriptRoot -ChildPath 'output' -AdditionalChildPath $moduleName
 
 # ── clean / create output directory ─────────────────────────────────────────
 if (Test-Path $outputPath) {

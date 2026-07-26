@@ -22,9 +22,9 @@
 
         .EXAMPLE
         Merge-Toml -BaseObject 'a = 1' -OverrideObject 'b = 2'
-        # Returns: "a = 1`nb = 2"
 
-        Merges two TOML strings with no overlapping keys.
+        Merges two TOML strings with no overlapping keys. The result is a
+        string containing both key-value pairs.
 
         .EXAMPLE
         Merge-Toml -Path 'defaults.toml', 'local.toml' -Strategy 'FirstWins'
@@ -33,7 +33,7 @@
         define the same scalar key.
 
         .INPUTS
-        None. Parameters only.
+        None
 
         .OUTPUTS
         [string]

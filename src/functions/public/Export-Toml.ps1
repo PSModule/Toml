@@ -26,10 +26,12 @@
         Round-trips a TOML file: parse then re-serialize.
 
         .INPUTS
-        [object] — pipeline input supported.
+        [object]
+
+        Pipeline input is supported.
 
         .OUTPUTS
-        [void] — nothing is written to the output stream.
+        [void]
 
         .NOTES
         Throws when:

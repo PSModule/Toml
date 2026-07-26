@@ -37,7 +37,9 @@
         $true if the content parses successfully.
 
         .INPUTS
-        [string] — pipeline input supported for the InputObject parameter.
+        [string]
+
+        Pipeline input is supported for the InputObject parameter.
 
         .OUTPUTS
         [bool]
