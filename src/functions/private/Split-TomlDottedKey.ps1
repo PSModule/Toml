@@ -104,5 +104,5 @@
         $normalized.Add($segment)
     }
 
-    return , [string[]]$normalized.ToArray([string])
+    return , [string[]]$normalized.ToArray()
 }

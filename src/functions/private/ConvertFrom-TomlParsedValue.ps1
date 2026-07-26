@@ -27,7 +27,8 @@
         .OUTPUTS
         [object] — type depends on the TOML value kind.
     #>
-    [OutputType([string], [System.Collections.Specialized.OrderedDictionary], [object[]], [bool], [double], [long], [DateTimeOffset], [DateTime], [TimeSpan])]
+    [OutputType([string], [System.Collections.Specialized.OrderedDictionary])]
+    [OutputType([object[]], [bool], [double], [long], [DateTimeOffset], [DateTime], [TimeSpan])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
