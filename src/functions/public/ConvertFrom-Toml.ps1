@@ -45,7 +45,7 @@
         duplicate key, or structural violation.
 
         .LINK
-        https://psmodule.io/Toml/Functions/ConvertFrom-Toml
+        https://psmodule.io/Toml/Functions/ConvertFrom-Toml/
     #>
     [OutputType([TomlDocument])]
     [CmdletBinding()]

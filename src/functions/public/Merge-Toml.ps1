@@ -44,7 +44,7 @@
         scalar key.
 
         .LINK
-        https://psmodule.io/Toml/Functions/Merge-Toml
+        https://psmodule.io/Toml/Functions/Merge-Toml/
     #>
     [OutputType([string])]
     [CmdletBinding(DefaultParameterSetName = 'Default')]

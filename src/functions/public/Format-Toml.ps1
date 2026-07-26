@@ -56,7 +56,7 @@
         available) to check validity without raising a terminating error.
 
         .LINK
-        https://psmodule.io/Toml/Functions/Format-Toml
+        https://psmodule.io/Toml/Functions/Format-Toml/
     #>
     [OutputType([string])]
     [CmdletBinding(DefaultParameterSetName = 'InputObject')]

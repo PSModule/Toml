@@ -48,7 +48,7 @@
         Key order is preserved when the input uses an ordered dictionary.
 
         .LINK
-        https://psmodule.io/Toml/Functions/ConvertTo-Toml
+        https://psmodule.io/Toml/Functions/ConvertTo-Toml/
     #>
     [OutputType([string])]
     [CmdletBinding()]

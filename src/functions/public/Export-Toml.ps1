@@ -40,7 +40,7 @@
         - the file cannot be created or written
 
         .LINK
-        https://psmodule.io/Toml/Functions/Export-Toml
+        https://psmodule.io/Toml/Functions/Export-Toml/
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param(

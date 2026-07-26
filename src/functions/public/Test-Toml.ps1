@@ -50,7 +50,7 @@
         non-terminating errors so the function never throws.
 
         .LINK
-        https://psmodule.io/Toml/Functions/Test-Toml
+        https://psmodule.io/Toml/Functions/Test-Toml/
     #>
     [OutputType([bool])]
     [CmdletBinding(DefaultParameterSetName = 'Default')]

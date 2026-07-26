@@ -37,7 +37,7 @@
         - the file content is not valid TOML 1.0.0
 
         .LINK
-        https://psmodule.io/Toml/Functions/Import-Toml
+        https://psmodule.io/Toml/Functions/Import-Toml/
     #>
     [OutputType([TomlDocument])]
     [CmdletBinding()]
