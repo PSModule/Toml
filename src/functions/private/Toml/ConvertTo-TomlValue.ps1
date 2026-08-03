@@ -41,14 +41,19 @@
     $culture = [System.Globalization.CultureInfo]::InvariantCulture
 
     if ($Value -is [string]) {
-        $escaped = $Value.
-            Replace('\', '\\').
-            Replace('"', '\"').
-            Replace("`b", '\b').
-            Replace("`f", '\f').
-            Replace("`t", '\t').
-            Replace("`r", '\r').
-            Replace("`n", '\n')
+        $escaped = $Value
+        $replacements = [ordered]@{
+            '\'  = '\\'
+            '"'  = '\"'
+            "`b" = '\b'
+            "`f" = '\f'
+            "`t" = '\t'
+            "`r" = '\r'
+            "`n" = '\n'
+        }
+        foreach ($pair in $replacements.GetEnumerator()) {
+            $escaped = $escaped.Replace($pair.Key, $pair.Value)
+        }
         return '"' + $escaped + '"'
     }
 
