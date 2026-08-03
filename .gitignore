@@ -11,12 +11,8 @@
 
 # PSModule framework outputs folder
 outputs/*
-output/
 
 # .Net build output
 bin/
 obj/
 libs/
-
-# Pester test output
-testResults.xml
