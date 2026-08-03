@@ -35,8 +35,12 @@
         .INPUTS
         None
 
+        You can't pipe objects to Merge-Toml.
+
         .OUTPUTS
-        [string]
+        System.String
+
+        TOML text representing the merged document.
 
         .NOTES
         Throws when a file cannot be found or read, when either document is not
@@ -44,7 +48,7 @@
         scalar key.
 
         .LINK
-        https://psmodule.io/Toml/Functions/Merge-Toml/
+        https://psmodule.io/Toml/Functions/Toml/Merge-Toml/
     #>
     [OutputType([string])]
     [CmdletBinding(DefaultParameterSetName = 'Default')]

@@ -23,12 +23,14 @@
         Pipes the document and inspects the data dictionary.
 
         .INPUTS
-        [string]
+        System.String
 
-        Pipeline input is supported for the Path parameter.
+        A file path, piped in or passed to -Path.
 
         .OUTPUTS
-        [TomlDocument]
+        TomlDocument
+
+        A parsed TOML document with its FilePath property set.
 
         .NOTES
         Throws when:
@@ -37,7 +39,7 @@
         - the file content is not valid TOML 1.0.0
 
         .LINK
-        https://psmodule.io/Toml/Functions/Import-Toml/
+        https://psmodule.io/Toml/Functions/Toml/Import-Toml/
     #>
     [OutputType([TomlDocument])]
     [CmdletBinding()]

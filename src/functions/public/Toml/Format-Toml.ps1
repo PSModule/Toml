@@ -42,12 +42,14 @@
         wildcard expansion.
 
         .INPUTS
-        [string]
+        System.String
 
-        Pipeline input is supported for the InputObject parameter.
+        TOML text, piped in or passed to -InputObject.
 
         .OUTPUTS
-        [string]
+        System.String
+
+        Normalized TOML text.
 
         .NOTES
         Throws when the input is not valid TOML 1.0.0, when a file path does not
@@ -56,7 +58,7 @@
         available) to check validity without raising a terminating error.
 
         .LINK
-        https://psmodule.io/Toml/Functions/Format-Toml/
+        https://psmodule.io/Toml/Functions/Toml/Format-Toml/
     #>
     [OutputType([string])]
     [CmdletBinding(DefaultParameterSetName = 'InputObject')]

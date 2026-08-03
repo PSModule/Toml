@@ -1,6 +1,11 @@
-﻿# Represents a parsed TOML document.
-# Exposes the root key-value data as an ordered dictionary and records the
-# file path when the document was loaded from disk.
+﻿<#
+    .SYNOPSIS
+    Represents a parsed TOML document.
+
+    .DESCRIPTION
+    Exposes the root key-value data as an ordered dictionary and records the
+    file path when the document was loaded from disk.
+#>
 class TomlDocument {
     # The root key-value pairs of the TOML document, preserving insertion order.
     [System.Collections.Specialized.OrderedDictionary] $Data

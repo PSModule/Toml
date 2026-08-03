@@ -37,12 +37,14 @@
         $true if the content parses successfully.
 
         .INPUTS
-        [string]
+        System.String
 
-        Pipeline input is supported for the InputObject parameter.
+        TOML text, piped in or passed to -InputObject.
 
         .OUTPUTS
-        [bool]
+        System.Boolean
+
+        $true if the input is valid TOML; otherwise $false.
 
         .NOTES
         Mirrors the pattern of the built-in Test-Json cmdlet.
@@ -50,7 +52,7 @@
         non-terminating errors so the function never throws.
 
         .LINK
-        https://psmodule.io/Toml/Functions/Test-Toml/
+        https://psmodule.io/Toml/Functions/Toml/Test-Toml/
     #>
     [OutputType([bool])]
     [CmdletBinding(DefaultParameterSetName = 'Default')]

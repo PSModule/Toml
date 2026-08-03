@@ -25,7 +25,7 @@
             title  = 'My App'
             server = [ordered]@{ host = 'localhost'; port = 8080 }
         })
-        Write-Host $toml
+        $toml
 
         Serializes a nested ordered dictionary to TOML text.
 
@@ -35,12 +35,14 @@
         Round-trips a TOML file back to TOML text.
 
         .INPUTS
-        [object]
+        System.Object
 
-        Pipeline input is supported.
+        The object graph to serialize, piped in or passed to -InputObject.
 
         .OUTPUTS
-        [string]
+        System.String
+
+        TOML text representing the input object graph.
 
         .NOTES
         Throws when the object graph contains null values (TOML has no null type),
@@ -48,7 +50,7 @@
         Key order is preserved when the input uses an ordered dictionary.
 
         .LINK
-        https://psmodule.io/Toml/Functions/ConvertTo-Toml/
+        https://psmodule.io/Toml/Functions/Toml/ConvertTo-Toml/
     #>
     [OutputType([string])]
     [CmdletBinding()]
@@ -75,6 +77,6 @@
 
         $sb = [System.Text.StringBuilder]::new()
         Add-TomlTableText -StringBuilder $sb -Table $root -Path '' -EmitHeader:$false
-        return $sb.ToString().TrimEnd()
+        $sb.ToString().TrimEnd()
     }
 }

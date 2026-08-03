@@ -35,17 +35,21 @@
         Converts a TOML string from the pipeline.
 
         .INPUTS
-        [string]
+        System.String
+
+        TOML text, piped in or passed to -InputObject.
 
         .OUTPUTS
-        [TomlDocument]
+        TomlDocument
+
+        A parsed TOML document with OrderedDictionary semantics.
 
         .NOTES
         Throws [System.InvalidOperationException] for any TOML syntax error,
         duplicate key, or structural violation.
 
         .LINK
-        https://psmodule.io/Toml/Functions/ConvertFrom-Toml/
+        https://psmodule.io/Toml/Functions/Toml/ConvertFrom-Toml/
     #>
     [OutputType([TomlDocument])]
     [CmdletBinding()]
@@ -59,7 +63,7 @@
         Write-Verbose "Parsing TOML string ($($InputObject.Length) character(s))."
         try {
             $data = ConvertFrom-TomlTable -InputObject $InputObject
-            return [TomlDocument]::new($data)
+            [TomlDocument]::new($data)
         } catch {
             throw [System.InvalidOperationException]::new(
                 "Failed to parse TOML: $($_.Exception.Message)",

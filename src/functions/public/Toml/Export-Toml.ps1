@@ -26,12 +26,14 @@
         Round-trips a TOML file: parse then re-serialize.
 
         .INPUTS
-        [object]
+        System.Object
 
-        Pipeline input is supported.
+        The object graph to export, piped in or passed to -InputObject.
 
         .OUTPUTS
-        [void]
+        None
+
+        This function does not produce pipeline output.
 
         .NOTES
         Throws when:
@@ -40,7 +42,7 @@
         - the file cannot be created or written
 
         .LINK
-        https://psmodule.io/Toml/Functions/Export-Toml/
+        https://psmodule.io/Toml/Functions/Toml/Export-Toml/
     #>
     [CmdletBinding(SupportsShouldProcess)]
     param(

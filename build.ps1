@@ -62,6 +62,12 @@ foreach ($f in (Get-ChildItem (Join-Path $srcPath 'init') -Filter '*.ps1' -Error
     $null = $sb.AppendLine((Get-Content $f.FullName -Raw))
 }
 
+# enums
+$enumsPath = Join-Path $srcPath 'enums'
+foreach ($f in (Get-ChildItem $enumsPath -Filter '*.ps1' -Recurse -ErrorAction SilentlyContinue)) {
+    $null = $sb.AppendLine((Get-Content $f.FullName -Raw))
+}
+
 # classes private then public
 foreach ($visibility in @('private', 'public')) {
     $classPath = Join-Path $srcPath "classes/$visibility"
