@@ -24,7 +24,7 @@
         .OUTPUTS
         [object] — type depends on the TOML value.
     #>
-    [OutputType([object])]
+    [OutputType([object], [object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
