@@ -1,0 +1,12 @@
+# Strings - all four TOML string types
+basic = "I'm a string. \"You can quote me\". Name\tTab\nNewLine."
+literal = 'C:\Users\nodejs\templates'
+multiline_basic = """
+Roses are red
+Violets are blue"""
+multiline_literal = '''
+First paragraph.
+
+Second paragraph.'''
+escaped_unicode = "\u03B1\u03B2\u03B3"
+empty = ""

@@ -1,0 +1,9 @@
+# All integer representations
+decimal = 42
+negative = -17
+positive = +99
+zero = 0
+large = 9_007_199_254_740_992
+hex = 0xDEADBEEF
+octal = 0o755
+binary = 0b11010110

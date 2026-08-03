@@ -1,0 +1,159 @@
+﻿#!/usr/bin/env pwsh
+#Requires -Version 7.0
+<#
+    .SYNOPSIS
+    Builds the Toml module from source into ./output/Toml/.
+
+    .DESCRIPTION
+    Assembles all source files (classes, init, private functions, public functions)
+    into a single psm1 and creates a manifest, so tests can be run locally without
+    the PSModule CI pipeline.
+#>
+[CmdletBinding()]
+param(
+    # Version to stamp into the manifest.
+    [Alias('ModuleVersion')]
+    [string] $Version,
+
+    # Optional prerelease label to stamp into PrivateData.PSData.Prerelease.
+    [string] $Prerelease
+)
+
+$ErrorActionPreference = 'Stop'
+$moduleName = 'Toml'
+$srcPath = Join-Path $PSScriptRoot 'src'
+$outputPath = Join-Path -Path $PSScriptRoot -ChildPath 'output' -AdditionalChildPath $moduleName
+$resolvedVersion = if (-not [string]::IsNullOrWhiteSpace($Version)) {
+    $Version
+} elseif (-not [string]::IsNullOrWhiteSpace($env:PSMODULE_BUILD_PSMODULE_INPUT_Version)) {
+    $env:PSMODULE_BUILD_PSMODULE_INPUT_Version
+} else {
+    '0.0.1'
+}
+$resolvedPrerelease = if (-not [string]::IsNullOrWhiteSpace($Prerelease)) {
+    $Prerelease
+} elseif (-not [string]::IsNullOrWhiteSpace($env:PSMODULE_BUILD_PSMODULE_INPUT_Prerelease)) {
+    $env:PSMODULE_BUILD_PSMODULE_INPUT_Prerelease
+} else {
+    ''
+}
+
+# ── clean / create output directory ─────────────────────────────────────────
+if (Test-Path $outputPath) {
+    Remove-Item $outputPath -Recurse -Force
+}
+$null = New-Item -ItemType Directory -Path $outputPath -Force
+
+# ── build psm1 ───────────────────────────────────────────────────────────────
+$psm1Path = Join-Path $outputPath "$moduleName.psm1"
+$sb = [System.Text.StringBuilder]::new()
+
+# header
+$headerPath = Join-Path $srcPath 'header.ps1'
+if (Test-Path $headerPath) {
+    $null = $sb.AppendLine((Get-Content $headerPath -Raw))
+} else {
+    $null = $sb.AppendLine('$ErrorActionPreference = ''Stop''')
+    $null = $sb.AppendLine()
+}
+
+# init
+foreach ($f in (Get-ChildItem (Join-Path $srcPath 'init') -Filter '*.ps1' -ErrorAction SilentlyContinue)) {
+    $null = $sb.AppendLine((Get-Content $f.FullName -Raw))
+}
+
+# enums
+$enumsPath = Join-Path $srcPath 'enums'
+foreach ($f in (Get-ChildItem $enumsPath -Filter '*.ps1' -Recurse -ErrorAction SilentlyContinue)) {
+    $null = $sb.AppendLine((Get-Content $f.FullName -Raw))
+}
+
+# classes private then public
+foreach ($visibility in @('private', 'public')) {
+    $classPath = Join-Path $srcPath "classes/$visibility"
+    foreach ($f in (Get-ChildItem $classPath -Filter '*.ps1' -Recurse -ErrorAction SilentlyContinue)) {
+        $null = $sb.AppendLine((Get-Content $f.FullName -Raw))
+    }
+}
+
+# private functions
+foreach ($f in (Get-ChildItem (Join-Path $srcPath 'functions/private') -Filter '*.ps1' -Recurse -ErrorAction SilentlyContinue)) {
+    $null = $sb.AppendLine((Get-Content $f.FullName -Raw))
+}
+
+# public functions
+$publicFunctions = [System.Collections.Generic.List[string]]::new()
+foreach ($f in (Get-ChildItem (Join-Path $srcPath 'functions/public') -Filter '*.ps1' -Recurse -ErrorAction SilentlyContinue)) {
+    $null = $sb.AppendLine((Get-Content $f.FullName -Raw))
+    $publicFunctions.Add([System.IO.Path]::GetFileNameWithoutExtension($f.Name))
+}
+
+# finally
+$finallyPath = Join-Path $srcPath 'finally.ps1'
+if (Test-Path $finallyPath) {
+    $null = $sb.AppendLine((Get-Content $finallyPath -Raw))
+}
+
+# class exporter — registers public classes as type accelerators (required by PSModule framework)
+$null = $sb.AppendLine(@'
+#region Class exporter
+$TypeAcceleratorsClass = [psobject].Assembly.GetType('System.Management.Automation.TypeAccelerators')
+$ExistingTypeAccelerators = $TypeAcceleratorsClass::Get
+$ExportableEnums = @(
+    [TomlValueKind]
+)
+$ExportableEnums | ForEach-Object { Write-Verbose "Exporting enum '$($_.FullName)'." }
+foreach ($Type in $ExportableEnums) {
+    if ($Type.FullName -in $ExistingTypeAccelerators.Keys) {
+        Write-Verbose "Enum already exists [$($Type.FullName)]. Skipping."
+    } else {
+        Write-Verbose "Importing enum '$Type'."
+        $TypeAcceleratorsClass::Add($Type.FullName, $Type)
+    }
+}
+$ExportableClasses = @(
+    [TomlDocument]
+)
+$ExportableClasses | ForEach-Object { Write-Verbose "Exporting class '$($_.FullName)'." }
+foreach ($Type in $ExportableClasses) {
+    if ($Type.FullName -in $ExistingTypeAccelerators.Keys) {
+        Write-Verbose "Class already exists [$($Type.FullName)]. Skipping."
+    } else {
+        Write-Verbose "Importing class '$Type'."
+        $TypeAcceleratorsClass::Add($Type.FullName, $Type)
+    }
+}
+$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
+    foreach ($Type in ($ExportableEnums + $ExportableClasses)) {
+        $null = $TypeAcceleratorsClass::Remove($Type.FullName)
+    }
+}.GetNewClosure()
+#endregion Class exporter
+'@)
+
+# Export-ModuleMember
+$null = $sb.AppendLine("Export-ModuleMember -Function @($($publicFunctions | ForEach-Object { "'$_'" } | Join-String -Separator ', '))")
+
+[System.IO.File]::WriteAllText($psm1Path, $sb.ToString(), [System.Text.UTF8Encoding]::new($true))
+
+# ── write manifest ────────────────────────────────────────────────────────────
+$psd1Path = Join-Path $outputPath "$moduleName.psd1"
+$manifest = @{
+    Path              = $psd1Path
+    ModuleVersion     = $resolvedVersion
+    RootModule        = "$moduleName.psm1"
+    FunctionsToExport = $publicFunctions.ToArray()
+    PowerShellVersion = '7.6'
+    Description       = 'PowerShell module for reading and writing TOML data.'
+    Author            = 'PSModule'
+    CompanyName       = 'PSModule'
+    GUID              = '6f1b6f8d-1234-4321-abcd-ef0123456789'
+}
+New-ModuleManifest @manifest
+
+if (-not [string]::IsNullOrWhiteSpace($resolvedPrerelease)) {
+    Write-Output "Built $moduleName $resolvedVersion-$resolvedPrerelease -> $outputPath"
+} else {
+    Write-Output "Built $moduleName $resolvedVersion -> $outputPath"
+}
+Write-Output "Public functions: $($publicFunctions -join ', ')"

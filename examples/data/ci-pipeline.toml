@@ -1,0 +1,71 @@
+[pipeline]
+name       = "my-app-ci"
+version    = 2
+timeout    = 3_600
+fail-fast  = true
+
+pipeline.meta.owner       = "platform-team"
+pipeline.meta.created     = 2024-03-15
+pipeline.meta.description = """
+A multi-stage pipeline that builds, \
+tests, and deploys the application \
+to all target environments."""
+
+[pipeline.triggers]
+branches  = ["main", "release/*", "hotfix/*"]
+tags      = ["v[0-9]*"]
+on-pr     = true
+
+[[pipeline.stages]]
+name       = "build"
+image      = "rust:1.78-slim"
+allow-fail = false
+
+[pipeline.stages.env]
+RUST_BACKTRACE   = "1"
+CARGO_TERM_COLOR = "always"
+
+[[pipeline.stages.steps]]
+name = "restore-cache"
+run  = "cargo fetch --locked"
+
+[[pipeline.stages.steps]]
+name    = "compile"
+run     = "cargo build --release --locked"
+timeout = 1_800
+
+[[pipeline.stages]]
+name       = "test"
+image      = "rust:1.78-slim"
+depends-on = ["build"]
+allow-fail = false
+
+[pipeline.stages.env]
+RUST_LOG = "debug"
+
+[[pipeline.stages.steps]]
+name = "unit-tests"
+run  = "cargo test --workspace"
+
+[[pipeline.stages.steps]]
+name    = "coverage"
+run     = "cargo llvm-cov --lcov --output-path lcov.info"
+timeout = 600
+
+[[pipeline.stages]]
+name       = "deploy"
+image      = "alpine:3.19"
+depends-on = ["build", "test"]
+when       = { branch = "main", event = "push" }
+
+[[pipeline.stages.steps]]
+name = "upload-artifact"
+run  = "aws s3 cp ./target/release/my-app s3://releases/"
+
+[[pipeline.stages.steps]]
+name = "notify-slack"
+run  = "curl -X POST $SLACK_WEBHOOK -d @payload.json"
+
+[pipeline.notifications]
+on-success = { channel = "#deploys", message = "Deploy succeeded" }
+on-failure = { channel = "#oncall",  message = "Pipeline failed!" }

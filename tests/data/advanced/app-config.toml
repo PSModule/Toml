@@ -1,0 +1,117 @@
+# app-config.toml
+# Production application configuration — TOML 1.0.0
+# Features: multi-line basic/literal strings, all escape sequences, Unicode,
+#           dotted keys, inline tables, arrays, standard/dotted table headers,
+#           array-of-tables, integer underscores, comments.
+
+[app]
+name    = "Web Service"
+version = "2.4.1"
+debug   = false
+workers = 4
+
+app.build.commit = "a3f9e12b"
+app.build.date   = 2024-07-23T14:00:00Z
+app.build.tag    = "v2.4.1"
+
+# ── String types ──────────────────────────────────────────────────────────────
+
+[strings]
+tabs-and-newlines = "column1\tcolumn2\nrow2-col1\trow2-col2"
+quote-in-string   = "She said \"hello\" and left."
+backslash         = "C:\\Users\\Alice\\Documents"
+null-byte         = "before\u0000after"
+smiley            = "\U0001F600"
+greek-delta       = "\u03B4"
+snowman           = "\u2603"
+
+sql-query = """
+    SELECT u.id, u.name, u.email, \
+           p.plan, p.expires_at
+    FROM   users u
+    JOIN   plans p ON p.user_id = u.id
+    WHERE  u.active = TRUE
+      AND  p.expires_at > NOW()
+    ORDER  BY u.name ASC
+    LIMIT  100;"""
+
+changelog-entry = """
+## v2.4.1 — 2024-07-23
+
+### Fixed
+- Memory leak in connection pool
+- Race condition in cache eviction
+"""
+
+regex-pattern    = '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'
+windows-path-raw = 'C:\Program Files\MyApp\config.ini'
+
+shell-script = '''
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Done at $(date)"
+'''
+
+# ── Server ────────────────────────────────────────────────────────────────────
+
+[server]
+host          = "0.0.0.0"
+port          = 8_080
+read-timeout  = 30
+write-timeout = 60
+idle-timeout  = 120
+
+[server.tls]
+enabled     = true
+cert-file   = "/etc/ssl/certs/app.crt"
+key-file    = "/etc/ssl/private/app.key"
+min-version = "TLS1.2"
+ciphers     = [
+    "TLS_AES_128_GCM_SHA256",
+    "TLS_AES_256_GCM_SHA384",
+    "TLS_CHACHA20_POLY1305_SHA256",
+    "ECDHE-RSA-AES256-GCM-SHA384",
+]
+
+[server.cors]
+allowed-origins = ["https://example.com", "https://app.example.com"]
+allowed-methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+max-age         = 86_400
+
+# ── Database ──────────────────────────────────────────────────────────────────
+
+[database]
+driver = "postgres"
+pool   = { min = 5, max = 50, timeout = 30, idle-timeout = 600 }
+
+# ── Feature flags ─────────────────────────────────────────────────────────────
+
+[[feature_flag]]
+name        = "new-dashboard"
+enabled     = true
+rollout-pct = 25
+started     = 2024-05-01
+
+  [feature_flag.targeting]
+  segments = ["beta-users", "internal"]
+  regions  = ["us-east-1", "eu-west-1"]
+
+[[feature_flag]]
+name        = "graphql-api"
+enabled     = false
+rollout-pct = 0
+started     = 2024-07-01T00:00:00Z
+
+  [feature_flag.targeting]
+  segments = []
+  regions  = ["us-east-1"]
+
+[[feature_flag]]
+name        = "ml-recommendations"
+enabled     = true
+rollout-pct = 100
+started     = 2024-03-15T09:00:00+02:00
+
+  [feature_flag.targeting]
+  segments = ["all"]
+  regions  = ["us-east-1", "us-west-2", "eu-west-1", "ap-southeast-1"]
