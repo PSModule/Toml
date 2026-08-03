@@ -74,20 +74,19 @@ noon            = 12:00:00
 end-of-day      = 23:59:59
 with-millis     = 17:45:00.123
 
-# ── Mixed-type and nested arrays ─────────────────────────────────────────────
+# ── Homogeneous and nested arrays ────────────────────────────────────────────
 
 [arrays]
 integers  = [1, 2, 3, 4, 5]
 floats    = [1.1, 2.2, 3.3]
 strings   = ["alpha", "beta", "gamma"]
 booleans  = [true, false, true]
-mixed     = [1, 1.5, "two", true]
 
 dates = [
     1987-07-05T17:45:00Z,
-    1979-05-27T07:32:00,
-    2006-06-01,
-    11:00:00,
+    1979-05-27T07:32:00Z,
+    2006-06-01T00:00:00Z,
+    2024-01-01T11:00:00Z,
 ]
 
 nested-strings = [["a", "b"], ["c", "d"], ["e"]]

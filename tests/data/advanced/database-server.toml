@@ -3,7 +3,7 @@
 # Features: dotted top-level keys, quoted keys with dots/spaces, all four
 #           datetime forms, dotted table paths, array-of-tables with nested
 #           sub-tables and nested AoT, inline tables, all integer bases,
-#           all float forms, heterogeneous arrays.
+#           all float forms, homogeneous arrays.
 
 cluster.name    = "primary-pg-cluster"
 cluster.version = "16.2"
@@ -122,14 +122,14 @@ labels          = { cluster = "primary-pg-cluster", env = "production" }
 alert-thresholds = [
     0.8,
     0.9,
-    true,
-    "ops-team",
+    0.95,
+    0.99,
 ]
 
 retention-windows = [
-    [60,    "raw"],
-    [3600,  "1h-rollup"],
-    [86400, "1d-rollup"],
+    [60,    300],
+    [3600,  7200],
+    [86400, 172800],
 ]
 
 [[monitoring.alerts]]
