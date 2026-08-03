@@ -42,7 +42,7 @@
         return ConvertFrom-TomlDateTime -Token $Token
     }
 
-    if ($Token -match '^[+\-]?0x[0-9A-Fa-f_]+$') {
+    if ($Token -match '^[+\-]?0x[0-9A-Fa-f](?:_?[0-9A-Fa-f])*$') {
         $isNegative = $Token.StartsWith('-')
         $hex = $Token.TrimStart('+', '-').Substring(2).Replace('_', '')
         $number = [Convert]::ToUInt64($hex, 16)
@@ -50,7 +50,7 @@
         return [long]$number
     }
 
-    if ($Token -match '^[+\-]?0o[0-7_]+$') {
+    if ($Token -match '^[+\-]?0o[0-7](?:_?[0-7])*$') {
         $isNegative = $Token.StartsWith('-')
         $oct = $Token.TrimStart('+', '-').Substring(2).Replace('_', '')
         $number = [Convert]::ToInt64($oct, 8)
@@ -58,7 +58,7 @@
         return [long]$number
     }
 
-    if ($Token -match '^[+\-]?0b[01_]+$') {
+    if ($Token -match '^[+\-]?0b[01](?:_?[01])*$') {
         $isNegative = $Token.StartsWith('-')
         $bin = $Token.TrimStart('+', '-').Substring(2).Replace('_', '')
         $number = [Convert]::ToInt64($bin, 2)
@@ -66,11 +66,11 @@
         return [long]$number
     }
 
-    if ($Token -match '^[+\-]?\d[\d_]*$') {
+    if ($Token -match '^[+\-]?\d(?:_?\d)*$') {
         return [long]::Parse($Token.Replace('_', ''), [System.Globalization.CultureInfo]::InvariantCulture)
     }
 
-    if ($Token -match '^[+\-]?(?:\d[\d_]*\.\d[\d_]*|\d[\d_]*[eE][+\-]?\d[\d_]*|\d[\d_]*\.\d[\d_]*[eE][+\-]?\d[\d_]*)$') {
+    if ($Token -match '^[+\-]?(?:\d(?:_?\d)*\.\d(?:_?\d)*(?:[eE][+\-]?\d(?:_?\d)*)?|\d(?:_?\d)*[eE][+\-]?\d(?:_?\d)*)$') {
         return [double]::Parse($Token.Replace('_', ''), [System.Globalization.CultureInfo]::InvariantCulture)
     }
 

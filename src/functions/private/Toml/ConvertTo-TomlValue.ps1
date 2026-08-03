@@ -41,7 +41,14 @@
     $culture = [System.Globalization.CultureInfo]::InvariantCulture
 
     if ($Value -is [string]) {
-        $escaped = $Value.Replace('\', '\\').Replace('"', '\"').Replace("`t", '\t').Replace("`r", '\r').Replace("`n", '\n')
+        $escaped = $Value.
+            Replace('\', '\\').
+            Replace('"', '\"').
+            Replace("`b", '\b').
+            Replace("`f", '\f').
+            Replace("`t", '\t').
+            Replace("`r", '\r').
+            Replace("`n", '\n')
         return '"' + $escaped + '"'
     }
 
@@ -72,6 +79,9 @@
         $dt = [System.DateTime]::SpecifyKind($Value, [System.DateTimeKind]::Unspecified)
         if ($dt.TimeOfDay -eq [System.TimeSpan]::Zero) {
             return $dt.ToString('yyyy-MM-dd', $culture)
+        }
+        if ($dt.Millisecond -gt 0) {
+            return $dt.ToString('yyyy-MM-ddTHH:mm:ss.fff', $culture)
         }
         return $dt.ToString('yyyy-MM-ddTHH:mm:ss', $culture)
     }

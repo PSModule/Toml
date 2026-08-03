@@ -18,6 +18,7 @@ Describe 'Toml' {
             $commands | Should -Contain 'Export-Toml'
             $commands | Should -Contain 'Format-Toml'
             $commands | Should -Contain 'Test-Toml'
+            $commands | Should -Contain 'Merge-Toml'
         }
     }
 
@@ -461,6 +462,26 @@ name = "test"
             It 'throws on table redefinition' {
                 { ConvertFrom-Toml -InputObject "[a]`nkey = 1`n[a]`nother = 2" } | Should -Throw
             }
+
+            It 'throws on an integer with a trailing underscore' {
+                { ConvertFrom-Toml -InputObject 'n = 1_' } | Should -Throw
+            }
+
+            It 'throws on a float with a trailing underscore' {
+                { ConvertFrom-Toml -InputObject 'n = 1.2_' } | Should -Throw
+            }
+
+            It 'throws on double underscores in an integer' {
+                { ConvertFrom-Toml -InputObject 'n = 1__2' } | Should -Throw
+            }
+
+            It 'throws on a mixed-type array' {
+                { ConvertFrom-Toml -InputObject 'arr = [1, "two", true]' } | Should -Throw
+            }
+
+            It 'throws on an integer-float mixed array' {
+                { ConvertFrom-Toml -InputObject 'arr = [1, 2.5]' } | Should -Throw
+            }
         }
     }
 
@@ -518,6 +539,28 @@ name = "test"
                 $ts = [System.TimeSpan]::new(0, 8, 30, 0)
                 ConvertTo-Toml -InputObject ([ordered]@{ tm = $ts }) | Should -Match '08:30:00'
             }
+
+            It 'serializes a DateTime with milliseconds' {
+                $dt = [System.DateTime]::new(2024, 6, 1, 15, 30, 0, 123, [System.DateTimeKind]::Unspecified)
+                $result = ConvertTo-Toml -InputObject ([ordered]@{ dt = $dt })
+                $result | Should -Match '2024-06-01T15:30:00\.123'
+            }
+
+            It 'escapes backspace and form feed in basic strings' {
+                $result = ConvertTo-Toml -InputObject ([ordered]@{ s = "a`b`fc" })
+                $expected = 's = "a' + '\b' + '\f' + 'c"'
+                $result | Should -Be $expected
+                { ConvertFrom-Toml -InputObject $result } | Should -Not -Throw
+                (ConvertFrom-Toml -InputObject $result).Data['s'] | Should -Be "a`b`fc"
+            }
+
+            It 'escapes backslash, quote, and newline in basic strings' {
+                $result = ConvertTo-Toml -InputObject ([ordered]@{ s = "line1\`"line2`n" })
+                $expected = 's = "line1' + '\\' + '\"' + 'line2' + '\n' + '"'
+                $result | Should -Be $expected
+                $parsed = ConvertFrom-Toml -InputObject $result
+                $parsed.Data['s'] | Should -Be "line1\`"line2`n"
+            }
         }
 
         Context 'Nested tables and arrays' {
@@ -532,8 +575,25 @@ name = "test"
 
             It 'serializes an array of integers' {
                 $result = ConvertTo-Toml -InputObject ([ordered]@{ ports = @([long]80, [long]443) })
-                $result | Should -Match '80'
-                $result | Should -Match '443'
+                $result | Should -Match 'ports = \[ 80, 443 \]'
+                { ConvertFrom-Toml -InputObject $result } | Should -Not -Throw
+            }
+
+            It 'serializes an array of tables' {
+                $inputData = [ordered]@{
+                    products = @(
+                        [ordered]@{ name = 'Hammer'; sku = [long]738594937 }
+                        [ordered]@{ name = 'Nail'; sku = [long]284758393 }
+                    )
+                }
+                $result = ConvertTo-Toml -InputObject $inputData
+                $result | Should -Match '\[\[products\]\]'
+                $result | Should -Match 'name = "Hammer"'
+                $result | Should -Match 'name = "Nail"'
+                $parsed = ConvertFrom-Toml -InputObject $result
+                $parsed.Data['products'] | Should -HaveCount 2
+                $parsed.Data['products'][0]['name'] | Should -Be 'Hammer'
+                $parsed.Data['products'][1]['name'] | Should -Be 'Nail'
             }
 
             It 'serializes a PSCustomObject' {

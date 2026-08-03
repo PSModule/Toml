@@ -54,6 +54,7 @@
     if ($ch -eq '[') {
         $Index.Value++
         $items = [System.Collections.ArrayList]::new()
+        $firstItemType = $null
         while ($true) {
             Skip-TomlWhitespace -Source $Source -Index $Index
             if ($Index.Value -ge $Source.Length) {
@@ -64,7 +65,15 @@
                 break
             }
 
-            $null = $items.Add((ConvertFrom-TomlParsedValue -Source $Source -Index $Index))
+            $item = ConvertFrom-TomlParsedValue -Source $Source -Index $Index
+            if ($null -eq $firstItemType) {
+                $firstItemType = $item.GetType()
+            } elseif ($item.GetType() -ne $firstItemType) {
+                throw [System.InvalidOperationException]::new(
+                    "TOML arrays must be homogeneous: expected '$firstItemType' but found '$($item.GetType())'."
+                )
+            }
+            $null = $items.Add($item)
             Skip-TomlWhitespace -Source $Source -Index $Index
             if ($Index.Value -lt $Source.Length -and $Source[$Index.Value] -eq ',') {
                 $Index.Value++
@@ -78,7 +87,7 @@
             }
             throw [System.InvalidOperationException]::new('Invalid TOML array separator.')
         }
-        return $items.ToArray()
+        return , $items.ToArray()
     }
 
     if ($ch -eq '{') {

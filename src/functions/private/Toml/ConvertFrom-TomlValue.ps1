@@ -44,5 +44,10 @@
         throw [System.InvalidOperationException]::new("Unexpected trailing token in TOML value: '$($text.Substring($index))'.")
     }
 
+    # PowerShell unwraps single-element arrays returned from functions. Re-wrap
+    # arrays so that TOML arrays with one element remain arrays at every boundary.
+    if ($parsed -is [System.Array]) {
+        return , $parsed
+    }
     return $parsed
 }
